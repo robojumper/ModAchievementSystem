@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Guid>e09902e2-7928-4cc3-bcc5-475bad5d5177</Guid>
+    <Name>Mod Achievement System</Name>
+    <Description>So unfair that only the base game has achievements. Let's change that.</Description>
+    <SteamPublishID>0</SteamPublishID>
+    <AssemblyName>ModAchievementSystem</AssemblyName>
+    <RootNamespace>ModAchievementSystem</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Config\" />
+    <Folder Include="Content\" />
+    <Folder Include="Localization\" />
+    <Folder Include="Src\" />
+    <Folder Include="Src\ModAchievementSystem\" />
+    <Folder Include="Src\ModAchievementSystem\Classes\" />
+    <Folder Include="Src\ModAchievementSystemAPI\" />
+    <Folder Include="Src\ModAchievementSystemAPI\Classes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\XComModAchievementSystem.ini">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Localization\ModAchievementSystem.int">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="ReadMe.txt" />
+    <Content Include="ModPreview.jpg" />
+    <Content Include="Config\XComEditor.ini" />
+    <Content Include="Config\XComEngine.ini" />
+    <Content Include="Config\XComGame.ini" />
+    <Content Include="Content\UILibrary_MAS.upk">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Localization\XComGame.int" />
+    <Content Include="Src\ModAchievementSystemAPI\Classes\MAS_API_AchievementName.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModAchievementSystem\Classes\MAS_PersistentAchievementStorage.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModAchievementSystem\Classes\MAS_UIAchievementCard.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModAchievementSystem\Classes\MAS_UIAchievementItem.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModAchievementSystem\Classes\MAS_UIInventory.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModAchievementSystem\Classes\MAS_UISL_PauseMenu.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModAchievementSystem\Classes\MAS_UIViewAchievements.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModAchievementSystem\Classes\MAS_X2AchievementHelpers.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModAchievementSystem\Classes\MAS_X2AchievementTemplate.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModAchievementSystem\Classes\MAS_X2AchievementUnlockHandler.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModAchievementSystem\Classes\MAS_X2Achievement_ModAchievements.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModAchievementSystem\Classes\MAS_X2DownloadableContentInfo_ModAchievementSystem.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\ModAchievementSystem\Classes\MAS_XComGameState_AchievementObject.uc">
+      <SubType>Content</SubType>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildLocalExtensionPath)\XCOM2.targets" />
+</Project>

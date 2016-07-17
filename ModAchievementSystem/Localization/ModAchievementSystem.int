@@ -1,0 +1,37 @@
+[MAS_TestAchievement MAS_X2AchievementTemplate]
+strTitle=Cheated.
+strShortDesc=You dirty cheater.
+strLongDesc=You successfully unlocked this achievement via a console command. Hoorayy!
+strCategory=Test Achievements
+
+[MAS_NeverGetti MAS_X2AchievementTemplate]
+strTitle=Never Getti
+strShortDesc=Disabled on purpose
+strLongDesc=please do not use the cheat command
+strCategory=Test Achievements
+
+
+
+[MAS_UIViewAchievements]
+m_strTitle=Achievements
+m_strInventoryLabel=All
+m_strBuy=More
+m_strPoints=Points
+
+[MAS_UIInventory]
+m_strConfirmButtonLabel=CONFIRM
+m_strInventoryLabel=INVENTORY
+m_strTotalLabel=TOTAL
+
+
+[MAS_UIAchievementCard]
+m_strCostLabel=COST:
+m_strSupplyLabel=UNDER CONSTRUCTION:
+m_strTimeToBuildLabel=EST. TIME:
+m_strNeedEngineers=NEEDS ENGINEER
+m_strIntelLabel=INTEL:
+m_strScienceSkillLabel=REQUIRED SCIENTISTS:
+m_strEngineeringSkillLabel=REQUIRED ENGINEERS:
+m_strUpkeepCostLabel=MONTHLY UPKEEP COST:
+m_strInstant=INSTANT
+m_strPurchased=[PURCHASED]
