@@ -9,6 +9,7 @@ static function EventListenerReturn OnAchievementUnlocked(Object EventData, Obje
 
 	local MAS_UIAchievementPopupManager Popups;
 	
+	local MAS_UIAchievementPopupManager ActorIterator;
 
 	NameObject = MAS_API_AchievementName(EventData);
 	if (NameObject != none)
@@ -22,7 +23,15 @@ static function EventListenerReturn OnAchievementUnlocked(Object EventData, Obje
 				Storage.AddUnlockedAchievement(Achievement.DataName);
 				`log("MAS -- An Achievement has been unlocked. It is" @ Achievement.DataName);
 				Pres = `PRESBASE;
-				if(Pres.ScreenStack.IsNotInStack(class'MAS_UIAchievementPopupManager'))
+				
+				foreach Pres.AllActors(class'MAS_UIAchievementPopupManager', ActorIterator)
+				{
+					Popups = ActorIterator;
+				}
+
+				 //MAS_UIAchievementPopupManager(ActorIterator);
+
+				if(Popups == none)
 				{
 					`log("Created a new Achievement Popup Manager Screen");
 					Popups = Pres.Spawn(class'MAS_UIAchievementPopupManager', Pres);
@@ -30,10 +39,6 @@ static function EventListenerReturn OnAchievementUnlocked(Object EventData, Obje
 					Pres.Get2DMovie().LoadScreen(Popups);
 					//Pres.ScreenStack.Push(Popups);
 					//Popups.Hide();
-				}
-				else
-				{
-					Popups = MAS_UIAchievementPopupManager(Pres.ScreenStack.GetScreen(class'MAS_UIAchievementPopupManager'));
 				}
 				
 				Popups.Notify(Achievement);

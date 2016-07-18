@@ -205,7 +205,7 @@ simulated function OnCancel()
 
 defaultproperties
 {
-	//Package = "/ package/gfxInventory/Inventory";
+	Package = "/ package/gfxInventory/Inventory";
 
 	InventoryListName="inventoryListMC";
 	bAnimateOnInit = true;
