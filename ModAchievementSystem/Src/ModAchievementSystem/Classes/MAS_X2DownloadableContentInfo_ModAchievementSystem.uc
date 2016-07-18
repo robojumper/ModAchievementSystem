@@ -85,22 +85,3 @@ exec function TriggerAchievement(name AchName)
 	`GAMERULES.SubmitGameState(NewGameState);
 
 }
-
-exec function FixHQPres()
-{
-	`HQPRES.m_kAvengerHUD.Movie.UpdateHighestDepthScreens();
-}
-
-
-exec function LogAllAchievements()
-{
-	local array<MAS_X2AchievementTemplate> Achievements;
-	local MAS_X2AchievementTemplate AchTemplate;
-	
-	class'MAS_X2AchievementHelpers'.static.GetAllAchievementTemplates(Achievements);
-
-	foreach Achievements(AchTemplate)
-	{
-		`log("Found an Achievement:"@AchTemplate.DataName);
-	}
-}

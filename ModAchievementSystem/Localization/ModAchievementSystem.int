@@ -22,16 +22,3 @@ m_strPoints=Points
 m_strConfirmButtonLabel=CONFIRM
 m_strInventoryLabel=INVENTORY
 m_strTotalLabel=TOTAL
-
-
-[MAS_UIAchievementCard]
-m_strCostLabel=COST:
-m_strSupplyLabel=UNDER CONSTRUCTION:
-m_strTimeToBuildLabel=EST. TIME:
-m_strNeedEngineers=NEEDS ENGINEER
-m_strIntelLabel=INTEL:
-m_strScienceSkillLabel=REQUIRED SCIENTISTS:
-m_strEngineeringSkillLabel=REQUIRED ENGINEERS:
-m_strUpkeepCostLabel=MONTHLY UPKEEP COST:
-m_strInstant=INSTANT
-m_strPurchased=[PURCHASED]
