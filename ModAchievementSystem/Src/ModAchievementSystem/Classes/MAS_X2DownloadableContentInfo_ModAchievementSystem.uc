@@ -58,7 +58,6 @@ exec function ViewAchievements()
 	if (Pres.ScreenStack.IsNotInStack(class'MAS_UIViewAchievements'))
 	{
 		TempScreen = Pres.Spawn(class'MAS_UIViewAchievements', Pres);
-		//UIChooseClass(TempScreen).m_UnitRef = UnitRef;
 		Pres.ScreenStack.Push(TempScreen, Pres.Get2DMovie());
 	}
 

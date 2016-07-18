@@ -31,13 +31,15 @@ simulated function OnInit()
 }
 
 
-simulated function InitInventoryListAchievement(MAS_X2AchievementTemplate Template)
+simulated function MAS_UIAchievementItem InitInventoryListAchievement(MAS_X2AchievementTemplate Template)
 {
 	AchTemplate = Template;
 	InitListItem();
 
 	RealizeGoodState();
 	RealizeDisabledState();
+
+	return self;
 }
 
 simulated function RealizeGoodState()
@@ -69,8 +71,6 @@ simulated function RealizeDisabledState()
 
 	SetDisabled(bIsDisabled);
 }
-
-
 
 defaultproperties
 {

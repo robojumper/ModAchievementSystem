@@ -113,7 +113,7 @@ simulated function GetItems()
 	local MAS_X2AchievementTemplate Ach;
 	local AchievementGroup group;
 	
-	m_arrAchievements = GetAchievements(false);
+	m_arrAchievements = GetAchievements(false); // don't get hidden ones
 	SortItems();
 
 	cachedCategory = m_arrAchievements[0].strCategory;
@@ -127,6 +127,7 @@ simulated function GetItems()
 			GroupsCache.AddItem(group);
 			group = GetEmptyGroup();
 			group.strCategoryName = Ach.strCategory;
+			cachedCategory = Ach.strCategory;
 		}
 		group.iTotalAchievements += 1;
 		group.iGottenAchievements += (Ach.IsUnlocked() ? 1 : 0);
@@ -147,6 +148,10 @@ simulated function AchievementGroup GetEmptyGroup()
 
 simulated function SortItems()
 {
+	// should be a stable sorting algoritm
+	// so mods are ordered by category
+	// in there by whether they are unlocked
+	// and then by points
 	m_arrAchievements.Sort(SortByPoints);
 	m_arrAchievements.Sort(SortByEnabled);
 	m_arrAchievements.Sort(SortByCategory);

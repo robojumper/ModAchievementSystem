@@ -46,6 +46,9 @@
     <Content Include="Src\ModAchievementSystem\Classes\MAS_UIAchievementItem.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\ModAchievementSystem\Classes\MAS_UIAchievementPopupManager.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\ModAchievementSystem\Classes\MAS_UIInventory.uc">
       <SubType>Content</SubType>
     </Content>
