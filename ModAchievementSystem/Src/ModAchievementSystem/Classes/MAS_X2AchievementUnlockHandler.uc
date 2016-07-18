@@ -17,6 +17,7 @@ static function EventListenerReturn OnAchievementUnlocked(Object EventData, Obje
 		Achievement = class'MAS_X2AchievementHelpers'.static.FindAchievementTemplate(NameObject.AchievementName);
 		if (Achievement != none)
 		{
+			if (Achievement.IsUnlocked() == false)
 			{
 				Storage = new class'MAS_PersistentAchievementStorage';
 				Storage.AddUnlockedAchievement(Achievement.DataName);
