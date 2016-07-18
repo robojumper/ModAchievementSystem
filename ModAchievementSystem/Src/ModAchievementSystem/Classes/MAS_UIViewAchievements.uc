@@ -172,48 +172,10 @@ static function int SortByCategory(MAS_X2AchievementTemplate A, MAS_X2Achievemen
 	return A.strCategory > B.strCategory ? -1 : 0;
 }
 
-/*simulated function array<Commodity> ConvertClassesToCommodities()
-{
-	local MAS_X2AchievementTemplate AchTemplate;
-	local int idx;
-	local array<Commodity> arrCommodoties;
-	local Commodity AchComm;
-	
-	m_arrAchievements.Remove(0, m_arrAchievements.Length);
-	m_arrAchievements = GetAchievements();
-	//m_arrAchievements.Sort(SortClassesByName);
-
-	for (idx = 0; idx < m_arrAchievements.Length; idx++)
-	{
-		AchTemplate = m_arrAchievements[idx];
-		
-		AchComm.Title = AchTemplate.strTitle;
-		AchComm.Image = AchTemplate.strImage_Enabled;
-		AchComm.Desc = AchTemplate.strShortDesc;
-		AchComm.OrderHours = AchTemplate.points;
-		//AchComm.Requirements.SpecialRequirementsFn = class.static.AlwaysTrue;
-		arrCommodoties.AddItem(AchComm);
-	}
-
-	return arrCommodoties;
-}*/
-
 simulated function String GetButtonString(int ItemIndex)
 {
 	return m_strBuy;
 }
-
-/*simulated function bool CanAffordItem(int ItemIndex)
-{
-	if( ItemIndex > -1 && ItemIndex < arrItems.Length )
-	{
-		return XComHQ.CanAffordCommodity(arrItems[ItemIndex]);
-	}
-	else
-	{
-		return false;
-	}
-}*/
 
 simulated function bool ShouldShowGoodState(int index)
 {
@@ -246,10 +208,6 @@ simulated function int GetItemIndex(MAS_X2AchievementTemplate Item)
 	return -1;
 }
 
-/*static function bool AlwaysTrue()
-{
-	return true;
-}*/
 
 //This is overwritten in the research archives. 
 simulated function array<MAS_X2AchievementTemplate> GetAchievements(bool bGetHidden)

@@ -8,7 +8,7 @@ static function EventListenerReturn OnAchievementUnlocked(Object EventData, Obje
 	local XComPresentationLayerBase Pres;
 
 	local MAS_UIAchievementPopupManager Popups;
-	local MAS_UIAchievementItem Item;
+	
 
 	NameObject = MAS_API_AchievementName(EventData);
 	if (NameObject != none)
@@ -16,7 +16,7 @@ static function EventListenerReturn OnAchievementUnlocked(Object EventData, Obje
 		Achievement = class'MAS_X2AchievementHelpers'.static.FindAchievementTemplate(NameObject.AchievementName);
 		if (Achievement != none)
 		{
-			if (Achievement.IsUnlocked() == false) // remove that later
+			if (Achievement.IsUnlocked() == false || true) // remove that later
 			{
 				Storage = new class'MAS_PersistentAchievementStorage';
 				Storage.AddUnlockedAchievement(Achievement.DataName);
@@ -24,14 +24,18 @@ static function EventListenerReturn OnAchievementUnlocked(Object EventData, Obje
 				Pres = `PRESBASE;
 				if(Pres.ScreenStack.IsNotInStack(class'MAS_UIAchievementPopupManager'))
 				{
+					`log("Created a new Achievement Popup Manager Screen");
 					Popups = Pres.Spawn(class'MAS_UIAchievementPopupManager', Pres);
-					Pres.ScreenStack.Push(Popups, Pres.Get2DMovie());
+					Popups.InitScreen(XComPlayerController(Pres.Owner), Pres.Get2DMovie());
+					Pres.Get2DMovie().LoadScreen(Popups);
+					//Pres.ScreenStack.Push(Popups);
+					//Popups.Hide();
 				}
 				else
 				{
 					Popups = MAS_UIAchievementPopupManager(Pres.ScreenStack.GetScreen(class'MAS_UIAchievementPopupManager'));
 				}
-
+				
 				Popups.Notify(Achievement);
 				
 				//Pres.UITutorialBox(Achievement.strTitle, Achievement.strShortDesc $ "<br/> <br/>" $ Achievement.strLongDesc, Achievement.GetWideImagePath());

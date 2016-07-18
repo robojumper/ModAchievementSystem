@@ -95,24 +95,11 @@ simulated function BuildScreen()
 	SetBuiltLabel(m_strTotalLabel);
 
 	// send mouse scroll events to the list
-	ListBG.ProcessMouseEvents(List.OnChildMouseEvent);
+	//ListBG.ProcessMouseEvents(List.OnChildMouseEvent);
 
 	if( bIsIn3D )
 		class'UIUtilities'.static.DisplayUI3D(DisplayTag, CameraTag, OverrideInterpTime != -1 ? OverrideInterpTime : `HQINTERPTIME);
 }
-
-/*simulated function PopulateData()
-{
-	// override behavior in child classes
-	List.ClearItems();
-	PopulateAchievementCard();
-
-	if( List.ItemCount == 0 && m_strEmptyListTitle  != "" )
-	{
-		TitleHeader.SetText(m_strTitle, m_strEmptyListTitle);
-		SetCategory("");
-	}
-}*/
 
 event Tick(float deltaTime)
 {
@@ -190,132 +177,11 @@ simulated function bool AnyNotices()
 	return Notices.Length > 0;
 }
 
-
-/*simulated function SelectedItemChanged(UIList ContainerList, int ItemIndex)
-{
-	local MAS_UIAchievementItem ListItem;
-	//`log("MAS -- Changed Selection");
-	ListItem = MAS_UIAchievementItem(ContainerList.GetItem(ItemIndex));
-	if(ListItem != none)
-	{
-		if(ListItem.AchTemplate != none)
-		{
-			PopulateAchievementCard(ListItem.AchTemplate);
-			//`log("MAS -- Populated card");
-		}
-		
-	}
-}*/
-
-
-/*simulated function PopulateAchievementCard(optional MAS_X2AchievementTemplate AchievementTemplate)
-{
-	if( ItemCard != none )
-	{
-		if( AchievementTemplate != None )
-		{
-			ItemCard.PopulateAchievementCard(AchievementTemplate);
-			//`log("MAS -- Populated card called");
-			ItemCard.Show();
-		}
-		else
-		{
-			ItemCard.Hide();
-		}
-	}
-}*/
-
-/*simulated function PopulateItemCard(optional X2ItemTemplate ItemTemplate, optional StateObjectReference ItemRef)
-{
-	if( ItemCard != none )
-	{
-		if( ItemTemplate != None )
-		{
-			ItemCard.PopulateItemCard(ItemTemplate, ItemRef);
-			ItemCard.Show();
-		}
-		else
-			ItemCard.Hide();
-	}
-}*/
-
-/*simulated function PopulateResearchCard(optional Commodity ItemCommodity, optional StateObjectReference ItemRef)
-{
-	ItemCard.PopulateResearchCard(ItemCommodity, ItemRef);
-	ItemCard.Show();
-}*/
-
-/*simulated function PopulateSimpleCommodityCard(optional Commodity ItemCommodity, optional StateObjectReference ItemRef)
-{
-	ItemCard.PopulateSimpleCommodityCard(ItemCommodity, ItemRef);
-	ItemCard.Show();
-}*/
-
-/*simulated function HideQueue()
-{
-	local UIScreen QueueScreen;
-	
-	QueueScreen = Movie.Stack.GetScreen(class'UIFacility_Storage');
-	if( QueueScreen != None )
-		UIFacility_Storage(QueueScreen).Hide();
-}*/
-
-/*simulated function ShowQueue(optional bool bRefreshQueue = false)
-{
-	local UIScreen QueueScreen;
-	
-	QueueScreen = Movie.Stack.GetScreen(class'UIFacility_Storage');
-	if( QueueScreen != None )
-	{
-		if(bRefreshQueue)
-		{
-			//UIFacility_Storage(QueueScreen).UpdateBuildQueue();
-		}
-		UIFacility_Storage(QueueScreen).Show();
-	}
-}*/
-
 simulated function UpdateNavHelp()
 {
-	/*`HQPRES.m_kAvengerHUD.NavHelp.ClearButtonHelp();
-	`HQPRES.m_kAvengerHUD.NavHelp.AddBackButton(CloseScreen);*/
+	`HQPRES.m_kAvengerHUD.NavHelp.ClearButtonHelp();
+	`HQPRES.m_kAvengerHUD.NavHelp.AddBackButton(CloseScreen);
 }
-
-/*simulated function bool OnUnrealCommand(int cmd, int arg)
-{
-	local bool bHandled;
-
-	// Only pay attention to presses or repeats; ignoring other input types
-	// NOTE: Ensure repeats only occur with arrow keys
-	if ( !CheckInputIsReleaseOrDirectionRepeat(cmd, arg) )
-		return false;
-
-	bHandled = true;
-	switch( cmd )
-	{
-		case class'UIUtilities_Input'.const.FXS_BUTTON_B:
-		case class'UIUtilities_Input'.const.FXS_KEY_ESCAPE:
-		case class'UIUtilities_Input'.const.FXS_R_MOUSE_DOWN:
-			OnCancel();
-			break;
-		case class'UIUtilities_Input'.const.FXS_BUTTON_START:
-			`HQPRES.UIPauseMenu( ,true );
-			break;
-		default:
-			bHandled = false;
-			break;
-	}
-
-	return bHandled || super.OnUnrealCommand(cmd, arg);
-}*/
-
-// -1 will hide the highlight.
-/*simulated function SetTabHighlight(int TabIndex)
-{
-	MC.BeginFunctionOp("setTabHighlight");
-	MC.QueueNumber(TabIndex);
-	MC.EndOp();
-}*/
 
 simulated function SetCategory(string Category)
 {

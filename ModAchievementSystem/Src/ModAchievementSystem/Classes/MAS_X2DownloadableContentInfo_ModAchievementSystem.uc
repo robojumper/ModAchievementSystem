@@ -86,6 +86,11 @@ exec function TriggerAchievement(name AchName)
 
 }
 
+exec function FixHQPres()
+{
+	`HQPRES.m_kAvengerHUD.Movie.UpdateHighestDepthScreens();
+}
+
 
 exec function LogAllAchievements()
 {

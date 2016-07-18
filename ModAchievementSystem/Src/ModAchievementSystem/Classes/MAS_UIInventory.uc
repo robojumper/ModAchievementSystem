@@ -16,17 +16,7 @@ var UIPanel ListContainer; // contains all controls bellow
 var UIList List;
 var UIPanel ListBG;
 
-var XComGameStateHistory History;
-var XComGameState_HeadquartersXCom XComHQ;
-
-var name DisplayTag;
-var name CameraTag;
-
 var name InventoryListName;
-
-//Flag for type of info to fill in right info card. 
-var bool bSelectFirstAvailable; 
-var bool bUseSimpleCard; 
 
 // Set this to specify how long camera transition should take for this screen
 var float OverrideInterpTime;
@@ -35,9 +25,6 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 {
 	//`log("UIViewAchievements Init");
 	super.InitScreen(InitController, InitMovie, InitName);
-
-	History = `XCOMHISTORY;
-	XComHQ = class'UIUtilities_Strategy'.static.GetXComHQ(true);
 
 	BuildScreen();
 	UpdateNavHelp();
@@ -66,7 +53,6 @@ simulated function BuildScreen()
 
 	List = Spawn(class'UIList', ListContainer);
 	List.InitList(InventoryListName);
-	List.bSelectFirstAvailable = bSelectFirstAvailable;
 	List.bStickyHighlight = true;
 	List.OnSelectionChanged = SelectedItemChanged;
 	Navigator.SetSelected(ListContainer);
@@ -78,8 +64,6 @@ simulated function BuildScreen()
 	// send mouse scroll events to the list
 	ListBG.ProcessMouseEvents(List.OnChildMouseEvent);
 
-	if( bIsIn3D )
-		class'UIUtilities'.static.DisplayUI3D(DisplayTag, CameraTag, OverrideInterpTime != -1 ? OverrideInterpTime : `HQINTERPTIME);
 }
 
 simulated function PopulateData()
@@ -129,56 +113,6 @@ simulated function PopulateAchievementCard(optional MAS_X2AchievementTemplate Ac
 	}
 }
 
-/*simulated function PopulateItemCard(optional X2ItemTemplate ItemTemplate, optional StateObjectReference ItemRef)
-{
-	if( ItemCard != none )
-	{
-		if( ItemTemplate != None )
-		{
-			ItemCard.PopulateItemCard(ItemTemplate, ItemRef);
-			ItemCard.Show();
-		}
-		else
-			ItemCard.Hide();
-	}
-}*/
-
-/*simulated function PopulateResearchCard(optional Commodity ItemCommodity, optional StateObjectReference ItemRef)
-{
-	ItemCard.PopulateResearchCard(ItemCommodity, ItemRef);
-	ItemCard.Show();
-}*/
-
-/*simulated function PopulateSimpleCommodityCard(optional Commodity ItemCommodity, optional StateObjectReference ItemRef)
-{
-	ItemCard.PopulateSimpleCommodityCard(ItemCommodity, ItemRef);
-	ItemCard.Show();
-}*/
-
-/*simulated function HideQueue()
-{
-	local UIScreen QueueScreen;
-	
-	QueueScreen = Movie.Stack.GetScreen(class'UIFacility_Storage');
-	if( QueueScreen != None )
-		UIFacility_Storage(QueueScreen).Hide();
-}*/
-
-/*simulated function ShowQueue(optional bool bRefreshQueue = false)
-{
-	local UIScreen QueueScreen;
-	
-	QueueScreen = Movie.Stack.GetScreen(class'UIFacility_Storage');
-	if( QueueScreen != None )
-	{
-		if(bRefreshQueue)
-		{
-			//UIFacility_Storage(QueueScreen).UpdateBuildQueue();
-		}
-		UIFacility_Storage(QueueScreen).Show();
-	}
-}*/
-
 simulated function UpdateNavHelp()
 {
 	/*`HQPRES.m_kAvengerHUD.NavHelp.ClearButtonHelp();
@@ -213,13 +147,6 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 	return bHandled || super.OnUnrealCommand(cmd, arg);
 }
 
-// -1 will hide the highlight.
-/*simulated function SetTabHighlight(int TabIndex)
-{
-	MC.BeginFunctionOp("setTabHighlight");
-	MC.QueueNumber(TabIndex);
-	MC.EndOp();
-}*/
 
 simulated function SetCategory(string Category)
 {
@@ -258,16 +185,12 @@ simulated function SetBlackMarketLayout()
 simulated function OnLoseFocus()
 {
 	super.OnLoseFocus();
-	if(bIsIn3D)
-		UIMovie_3D(Movie).HideDisplay(DisplayTag);
 }
 
 simulated function OnReceiveFocus()
 {
 	super.OnReceiveFocus();
 	UpdateNavHelp();
-	if(bIsIn3D)
-		class'UIUtilities'.static.DisplayUI3D(DisplayTag, CameraTag, `HQINTERPTIME);
 }
 
 simulated function PlaySFX(String Sound)
@@ -275,35 +198,17 @@ simulated function PlaySFX(String Sound)
 	`XSTRATEGYSOUNDMGR.PlaySoundEvent(Sound);
 }
 
-simulated function XComGameState_HeadquartersResistance RESHQ()
-{
-	return class'UIUtilities_Strategy'.static.GetResistanceHQ();
-}
-
-simulated function XComGameState_HeadquartersAlien ALIENHQ()
-{
-	return class'UIUtilities_Strategy'.static.GetAlienHQ();
-}
-
-simulated function XComGameState_BlackMarket BLACKMARKET()
-{
-	return class'UIUtilities_Strategy'.static.GetBlackMarket();
-}
-
 simulated function OnCancel()
 {
 	CloseScreen();
-	if(bIsIn3D)
-		UIMovie_3D(Movie).HideDisplay(DisplayTag);
 }
 
 defaultproperties
 {
-	Package = "/ package/gfxInventory/Inventory";
+	//Package = "/ package/gfxInventory/Inventory";
 
 	InventoryListName="inventoryListMC";
 	bAnimateOnInit = true;
-	bSelectFirstAvailable = true;
 
 	OverrideInterpTime = -1;
 }
