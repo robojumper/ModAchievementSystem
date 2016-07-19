@@ -96,3 +96,5 @@ AchNameObj.AchievementName = 'MAS_GrimyLootRare'; // YOUR ACHIEVEMENT TEMPLATE N
 ```
 
 That's all. People will see a popup and the achievement will be added to the unlocked list.
+
+You don't need to worry about unlocking an achievement multiple times. Just trigger it, users will only see a popup the first time you trigger it.
