@@ -17,9 +17,11 @@ var config bool bHidden;
 
 var config int iPoints;
 
+var bool bUnlockedThisSession;
+
 function bool IsUnlocked()
 {
-	return class'MAS_X2AchievementHelpers'.static.IsAchievementUnlocked(DataName);
+	return class'MAS_X2AchievementHelpers'.static.IsAchievementUnlocked(DataName) || bUnlockedThisSession;
 }
 
 function string GetSmallImagePath()

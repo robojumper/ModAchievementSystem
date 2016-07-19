@@ -30,7 +30,7 @@ static function GetAllAchievementTemplates(out array<MAS_X2AchievementTemplate> 
 	{
 		AchievementTemplate = MAS_X2AchievementTemplate(Template);
 
-		if(AchievementTemplate != none)
+		if(AchievementTemplate != none && (AchievementTemplate.IsUnlocked() || !AchievementTemplate.bHidden))
 		{
 			Achievements.AddItem(AchievementTemplate);
 		}

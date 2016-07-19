@@ -21,6 +21,7 @@ static function EventListenerReturn OnAchievementUnlocked(Object EventData, Obje
 			{
 				Storage = new class'MAS_PersistentAchievementStorage';
 				Storage.AddUnlockedAchievement(Achievement.DataName);
+				Achievement.bUnlockedThisSession = true; // Hack because storage doesn't work until the next startup (or small delay)
 				`log("MAS -- An Achievement has been unlocked. It is" @ Achievement.DataName);
 				Pres = `PRESBASE;
 				
