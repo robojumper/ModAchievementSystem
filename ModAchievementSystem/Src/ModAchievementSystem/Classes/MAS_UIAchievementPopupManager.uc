@@ -141,6 +141,7 @@ simulated function Notify(MAS_X2AchievementTemplate Template)
 	Notice.Template = Template;
 	Notices.AddItem(Notice);
 	UpdateEventNotices();
+	WorldInfo.PlayAkEvent(AkEvent'SoundTacticalUI_Hacking.Unlock_Second_Item');
 }
 
 simulated function UpdateEventNotices()
