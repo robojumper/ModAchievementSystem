@@ -63,15 +63,15 @@ simulated function BuildScreen()
 {
 	`log("BuildScreen Called");
 	// BAsically, spawn everything and then hide it
-	/*TitleHeader = Spawn(class'UIX2PanelHeader', self);
+	TitleHeader = Spawn(class'UIX2PanelHeader', self);
 	TitleHeader.InitPanelHeader('TitleHeader', m_strTitle, m_strSubTitleTitle);
 	TitleHeader.SetHeaderWidth( 580 );
-	if( m_strTitle == "" && m_strSubTitleTitle == "" )
-		TitleHeader.Hide();
-	*/
+	//if( m_strTitle == "" && m_strSubTitleTitle == "" )
+	TitleHeader.Hide();
+	
 	ListContainer = Spawn(class'UIPanel', self).InitPanel('InventoryContainer');
 	ListContainer.AnchorBottomRight();
-	ListContainer.SetPosition(-600, -400);
+	ListContainer.SetPosition(-600, -600);
 	ItemCard = Spawn(class'MAS_UIAchievementCard', ListContainer).InitAchievementCard('ItemCard');
 	ItemCard.Hide();
 
@@ -169,7 +169,7 @@ simulated function UpdateEventNotices()
 		Hide();
 	}
 
-	List.SetY(-List.ShrinkToFit());
+	//List.SetY(-List.ShrinkToFit());
 }
 
 simulated function bool AnyNotices()
