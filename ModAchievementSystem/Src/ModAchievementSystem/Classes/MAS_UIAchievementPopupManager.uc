@@ -1,4 +1,4 @@
-class MAS_UIAchievementPopupManager extends UIScreen;
+class MAS_UIAchievementPopupManager extends UIScreen config(ModAchievementSystem);
 
 var localized string m_strTitle;
 var localized string m_strSubTitleTitle;
@@ -22,7 +22,8 @@ var XComGameState_HeadquartersXCom XComHQ;
 var name DisplayTag;
 var name CameraTag;
 
-var MAS_UIAchievementItem TestItem;
+var config int iOffset_X;
+var config int iOffset_Y;
 
 var name InventoryListName;
 
@@ -56,7 +57,7 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	XComHQ = class'UIUtilities_Strategy'.static.GetXComHQ(true);
 
 	BuildScreen();
-	UpdateNavHelp();
+	//UpdateNavHelp();
 }
 
 simulated function BuildScreen()
@@ -71,7 +72,7 @@ simulated function BuildScreen()
 	
 	ListContainer = Spawn(class'UIPanel', self).InitPanel('InventoryContainer');
 	ListContainer.AnchorBottomRight();
-	ListContainer.SetPosition(-600, -600);
+	ListContainer.SetPosition(iOffset_X, iOffset_Y);
 	ItemCard = Spawn(class'MAS_UIAchievementCard', ListContainer).InitAchievementCard('ItemCard');
 	ItemCard.Hide();
 

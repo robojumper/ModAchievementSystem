@@ -8,7 +8,7 @@ Supporting Achievements is a twofold thing.
 
 #### Configuration
 
-This is done via an .ini file. Create a file named ```XComModAchievementSystem.ini``` in your Mod's ```Content``` Folder.
+This is done via an .ini file. Create a file named ```XComModAchievementSystem.ini``` in your Mod's ```Config``` Folder.
 
 In there, you have to create two sections. This is what an example Achievement looks like:
 

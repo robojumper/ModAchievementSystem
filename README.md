@@ -21,3 +21,7 @@ In game popup
 List of all achievements
 
 ![List of all achievements](Res/List.jpg "List of all achievements")
+
+### Credits
+
+Huge thanks to Grimy and RealityMachina, for they were the first to implement achievements and give valuable feedback!

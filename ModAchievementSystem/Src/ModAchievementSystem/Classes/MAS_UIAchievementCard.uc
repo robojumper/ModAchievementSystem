@@ -4,8 +4,6 @@ class MAS_UIAchievementCard extends UIPanel;
 simulated function MAS_UIAchievementCard InitAchievementCard(optional name InitName)
 {
 	InitPanel(InitName);
-	`log("An Achievement Card has been inited");
-	//History = `XCOMHISTORY;
 	return self;
 }
 
@@ -14,7 +12,6 @@ simulated function PopulateAchievementCard(optional MAS_X2AchievementTemplate Ac
 {
 
 	local string strShortDesc, strLongDesc, strTitle;
-	//`log("I AM THE CARD");
 	if( AchTemplate == None )
 	{
 		Hide();
@@ -35,7 +32,6 @@ simulated function PopulateAchievementCard(optional MAS_X2AchievementTemplate Ac
 simulated function SetAchievementImage(optional MAS_X2AchievementTemplate AchTemplate)
 {
 	local string Image;
-	//`log("I CAN SHOW MY IMAGE");
 	if (AchTemplate != none)
 	{
 		Image = AchTemplate.GetWideImagePath();
@@ -49,7 +45,6 @@ simulated function SetAchievementImage(optional MAS_X2AchievementTemplate AchTem
 
 simulated function PopulateData(string Title, string LongDesc, string ShortDesc, string ImagePath)
 {
-	//`log("I CAN POPULATE");
 	mc.BeginFunctionOp("PopulateData");
 	mc.QueueString(Title);
 	
@@ -64,8 +59,8 @@ simulated function PopulateData(string Title, string LongDesc, string ShortDesc,
 
 simulated function PopulateCost(int Points) {
 	mc.BeginFunctionOp("PopulateCostData");
-	mc.QueueString("");
-	mc.QueueString("");
+	//mc.QueueString("");
+	//mc.QueueString("");
 	mc.QueueString(class'MAS_UIViewAchievements'.default.m_strPoints);
 	mc.QueueString(string(Points));
 	mc.EndOp();
