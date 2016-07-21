@@ -59,8 +59,8 @@ simulated function PopulateData(string Title, string LongDesc, string ShortDesc,
 
 simulated function PopulateCost(int Points) {
 	mc.BeginFunctionOp("PopulateCostData");
-	//mc.QueueString("");
-	//mc.QueueString("");
+	mc.QueueString("");
+	mc.QueueString("");
 	mc.QueueString(class'MAS_UIViewAchievements'.default.m_strPoints);
 	mc.QueueString(string(Points));
 	mc.EndOp();
