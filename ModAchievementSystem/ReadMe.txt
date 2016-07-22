@@ -15,8 +15,9 @@ A system for mods to register and unlock achievements. Takes care of all the UI 
 [b]Already Supported[/b]
 
 [list]
-[*] Some of Grimy's Mods
-[*] Some of RealityMachinas Mods
+[*] Grimy's Mods
+[*] RealityMachina's Mods
+[*] Some More Achievements (by me)
 [/list]
 
 
