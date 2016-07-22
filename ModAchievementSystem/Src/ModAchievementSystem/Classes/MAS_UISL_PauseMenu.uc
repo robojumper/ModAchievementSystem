@@ -1,4 +1,7 @@
-class MAS_UISL_PauseMenu extends UIScreenListener dependson(X2GameRuleset);
+class MAS_UISL_PauseMenu extends UIScreenListener config(ModAchievementSystem);
+
+var config int iOffset_X;
+var config int iOffset_Y;
 
 event OnInit(UIScreen Screen)
 {
@@ -10,7 +13,8 @@ event OnInit(UIScreen Screen)
 
 	Button = Pause.Spawn(class'UIButton', Pause).InitButton('Button', "Achievements", OnClickAchievementsButton);
 	Button.AnchorTopCenter();
-	Button.SetX(-80);
+	Button.SetX(iOffset_X);
+	Button.SetY(iOffset_Y);
 }
 
 simulated function OnClickAchievementsButton(UIButton Button)
