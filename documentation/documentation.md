@@ -37,6 +37,24 @@ The points are used for completion calculation and give your users a good impres
 
 You can choose to hide spoiler achievements - they will not show up until you unlock them.
 
+##### Progression Achievements
+
+Progression Achievements are achievements that show progress on their short Description.
+
+They can either be completely cosmetic and regularly re-set to the accurate number, or unlock automatically when the required progress is met.
+
+```
+iTotalProgressRequired=3
+bNoAutoUnlock=true
+bNoCapForProgression=false
+```
+
+An achievement will be considered a progression achievement when ```iTotalProgressRequired > 0```.
+
+If ```bNoAutoUnlock``` is true, the counter will just go up and not unlock the achievement automatically - you have to unlock it manually.
+
+If ```bNoCapForProgression``` is true, there can be descriptions like "Kill Sectoids (7/3)". If it is false, the number will be capped at max.
+
 #### Localization
 
 To give your achievements unique names, you need to add a localization file. Create a file called ```ModAchievementSystem.int``` in your Mod's ```Localization``` folder.
@@ -55,15 +73,11 @@ strCategory=Test Achievements
 
 ### Compiler Setup
 
-In your ```Src``` folder, create a folder called ```ModAchievementSystemAPI```. In there, create a folder called ```Classes```.
+In your ```Src``` folder, create a folder called ```LW_Tuple```. In there, create a folder called ```Classes```.
 
-In this folder, create a new UnrealScript called ```MAS_API_AchievementName.uc```. Content as follows.
+In this folder, create a new UnrealScript called ```LWTuple.uc```. Content as follows.
 
-```
-class MAS_API_AchievementName extends Object;
-
-var name AchievementName;
-```
+[LWTuple.uc](https://github.com/robojumper/ModAchievementSystem/blob/master/ModAchievementSystem/Src/LW_Tuple/Classes/LWTuple.uc)
 
 Then open your ```Config/XComEngine.ini```
 
@@ -76,25 +90,75 @@ if not already present, create the section
 and add 
 
 ```
-+EditPackages=ModAchievementSystemAPI
++EditPackages=LW_Tuple
 ```
 
-below it. This tells the compiler to use this intermediary Information Exchange class.
+below it. This tells the compiler to use this Information Exchange class.
 
 ## Unlocking Achievements.
 
 You can unlock achievements via some simple lines:
 
 ```
-local MAS_API_AchievementName AchNameObj;
-
+local LWTuple AchTuple;
+local LWTValue Value;
 // ...
 
-AchNameObj = new class'MAS_API_AchievementName'; 
-AchNameObj.AchievementName = 'MAS_GrimyLootRare'; // YOUR ACHIEVEMENT TEMPLATE NAME
-`XEVENTMGR.TriggerEvent('UnlockAchievement', AchNameObj, , NewGameState);
+AchTuple = new class'LWTuple'; 
+AchTuple.Id = 'AchievementData'; // Must be this name
+
+// First entry: Achievement Name.
+Value.kind = LWTVName;
+Value.n = 'MyAchievementName';
+AchTuple.Data.AddItem(Value);
+
+// Second Entry: Command
+Value.kind = LWTVName;
+Value.n = 'UnlockAchievement';
+AchTuple.Data.AddItem(Value);
+
+`XEVENTMGR.TriggerEvent('UnlockAchievement', AchTuple, , );
 ```
 
 That's all. People will see a popup and the achievement will be added to the unlocked list.
 
 You don't need to worry about unlocking an achievement multiple times. Just trigger it, users will only see a popup the first time you trigger it.
+
+## Progression Achievements
+
+This short schematic outlines the commands my achievement mod can react to.
+
+```
+Data[0] = (kind=LWTVName, n='AchievementName') // Achievement name
+	Data[1] = (kind=LWTVName, n='UnlockAchievement') // unlock this achievement
+	Data[1] = (kind=LWTVName, n='ProgressByNumber')  // increase progress on this achievement
+		Data[2] = (kind=LWTVInt, i=pointsToProgress) // the amount of points to add (maybe negative?)
+	Data[1] = (kind=LWTVName, n='SetProgress') // overwrite progress on this achievement
+		Data[2] = (kind=LWTVInt, i=NewProgress) // the new progress number
+```
+
+What does this mean?
+
+```
+local LWTuple AchTuple;
+local LWTValue Value;
+
+AchTuple = new class'LWTuple';
+AchTuple.Id = 'AchievementData';
+
+Value.kind = LWTVName;
+Value.n = 'MyProgressionAchievement';
+AchTuple.Data.AddItem(Value);
+
+Value.kind = LWTVName;
+Value.n = 'ProgressByNumber';
+AchTuple.Data.AddItem(Value);
+
+Value.kind = LWTVInt;
+Value.i = 1;
+AchTuple.Data.AddItem(Value);
+
+`XEVENTMGR.TriggerEvent('UnlockAchievement', AchTuple, , );
+```
+
+In this code, we add 1 point of progression to the achievement ```MyProgressionAchievement```. Remember - if ```bNoAutoUnlock = true```, you need to unlock it manually.

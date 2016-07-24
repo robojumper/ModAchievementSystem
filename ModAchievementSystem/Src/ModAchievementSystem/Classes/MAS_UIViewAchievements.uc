@@ -179,18 +179,12 @@ simulated function String GetButtonString(int ItemIndex)
 
 simulated function bool ShouldShowGoodState(int index)
 {
-	local bool bGood;
-	bGood = class'MAS_X2AchievementHelpers'.static.IsAchievementUnlocked(m_arrAchievements[index].DataName); 
-	//`log("Achievement" @ m_arrAchievements[index].DataName @ "is" @ bGood);
-	return bGood;
+	return m_arrAchievements[index].IsUnlocked();
 }
 
 simulated function bool ShouldShowItemDisabledState(int index)
 {
-	local bool bEnabled;
-	bEnabled = class'MAS_X2AchievementHelpers'.static.IsAchievementUnlocked(m_arrAchievements[index].DataName); 
-	//`log("Achievement" @ m_arrAchievements[index].DataName @ "is" @ bGood);
-	return !bEnabled;
+	return !m_arrAchievements[index].IsUnlocked();
 }
 
 simulated function int GetItemIndex(MAS_X2AchievementTemplate Item)

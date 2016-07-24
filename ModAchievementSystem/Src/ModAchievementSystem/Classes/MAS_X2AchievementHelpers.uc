@@ -37,12 +37,3 @@ static function GetAllAchievementTemplates(out array<MAS_X2AchievementTemplate> 
 	}
 
 }
-
-static function bool IsAchievementUnlocked(name AchievementName)
-{
-	local bool unlocked;
-	unlocked = class'MAS_PersistentAchievementStorage'.default.UnlockedAchievements.Find(AchievementName) != INDEX_NONE;
-	//`log("Achievement" @ AchievementName @ "is" @ unlocked);
-	return unlocked;
-	
-}

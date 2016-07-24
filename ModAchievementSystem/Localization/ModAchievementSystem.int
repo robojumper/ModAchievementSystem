@@ -4,13 +4,6 @@ strShortDesc=You dirty cheater.
 strLongDesc=You successfully unlocked this achievement via a console command. Hoorayy!
 strCategory=Test Achievements
 
-[MAS_NeverGetti MAS_X2AchievementTemplate]
-strTitle=Never Getti
-strShortDesc=Disabled on purpose
-strLongDesc=please do not use the cheat command
-strCategory=Test Achievements
-
-
 
 [MAS_UIViewAchievements]
 m_strTitle=Achievements

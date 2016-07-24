@@ -46,7 +46,7 @@ static function AddAchievementTriggers(Object TriggerObj)
 
 	// Set up triggers for achievements
 	EventManager = class'X2EventManager'.static.GetEventManager();
-	EventManager.RegisterForEvent(TriggerObj, 'UnlockAchievement', class'MAS_X2AchievementUnlockHandler'.static.OnAchievementUnlocked, ELD_OnStateSubmitted, 50, , true);
+	EventManager.RegisterForEvent(TriggerObj, 'UnlockAchievement', class'MAS_X2AchievementUnlockHandler'.static.OnAchievementUnlocked, ELD_Immediate, 50, , true);
 }
 
 exec function ViewAchievements()
@@ -65,23 +65,45 @@ exec function ViewAchievements()
 
 exec function TriggerAchievement(name AchName)
 {
+	local LWTuple AchTuple;
+	local LWTValue Value;
 
-	//local XComGameStateHistory History;
-	local XComGameState NewGameState;
-	//local X2EventManager EventManager;
+	AchTuple = new class'LWTuple';
+	AchTuple.Id = 'AchievementData';
 
-	local MAS_API_AchievementName AchNameObj;
+	Value.kind = LWTVName;
+	Value.n = AchName;
+	AchTuple.Data.AddItem(Value);
 
-	//History = class'XComGameStateHistory'.static.GetGameStateHistory();
-	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Unlocking Achievement" @ AchName);
+	Value.kind = LWTVName;
+	Value.n = 'UnlockAchievement';
+	AchTuple.Data.AddItem(Value);
 
-	//EventManager = class'X2EventManager'.static.GetEventManager();
+	`XEVENTMGR.TriggerEvent('UnlockAchievement', AchTuple, , );
 
-	AchNameObj = new class'MAS_API_AchievementName';
-	AchNameObj.AchievementName = AchName;
+}
 
-	`XEVENTMGR.TriggerEvent('UnlockAchievement', AchNameObj, , NewGameState);
-	`log("Triggered UnlockAchievement for" @ AchNameObj.AchievementName);
-	`GAMERULES.SubmitGameState(NewGameState);
+exec function MakeProgressOnAchievement(name AchName)
+{
+
+	local LWTuple AchTuple;
+	local LWTValue Value;
+
+	AchTuple = new class'LWTuple';
+	AchTuple.Id = 'AchievementData';
+
+	Value.kind = LWTVName;
+	Value.n = AchName;
+	AchTuple.Data.AddItem(Value);
+
+	Value.kind = LWTVName;
+	Value.n = 'ProgressByNumber';
+	AchTuple.Data.AddItem(Value);
+
+	Value.kind = LWTVInt;
+	Value.i = 1;
+	AchTuple.Data.AddItem(Value);
+
+	`XEVENTMGR.TriggerEvent('UnlockAchievement', AchTuple, , );
 
 }
