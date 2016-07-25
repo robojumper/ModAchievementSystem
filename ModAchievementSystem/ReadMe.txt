@@ -8,6 +8,12 @@
 [*] Some More Achievements (by me)
 [/list]
 
+[b]Known Issues[/b]
+[list]
+[*] Doesn't work on new campaigns started with Quick Start AND this mod active. Workaround is to start a game, save in the Avenger, enable this mod, reload.
+[*] If they totally not work for some reason, use the console command [i]ModAchievementsReregister[/i]
+[/list]
+
 [b]Features[/b]
 [list]
 [*] [i]Optional Dependency[/i] - It's not required for your users, everything will work normally if they don't install the Achievement System

@@ -40,6 +40,40 @@ static event OnLoadedSavedGame()
 
 }
 
+exec function ModAchievementsReregister()
+{
+	local XComGameStateHistory History;
+	local XComGameState NewGameState;
+	local MAS_XComGameState_AchievementObject AchievementObject;
+
+	History = class'XComGameStateHistory'.static.GetGameStateHistory();
+	NewGameState = class'XComGameStateContext_ChangeContainer'.static.CreateChangeState("Adding Mod Achievement State");
+
+	// Add Achievement Object
+	AchievementObject = MAS_XComGameState_AchievementObject(History.GetSingleGameStateObjectForClass(class'MAS_XComGameState_AchievementObject', true));
+	if (AchievementObject == none) // Prevent duplicate Achievement Objects
+	{
+		AchievementObject = MAS_XComGameState_AchievementObject(NewGameState.CreateStateObject(class'MAS_XComGameState_AchievementObject'));
+		NewGameState.AddStateObject(AchievementObject);
+	}
+	else
+	{
+		`XEVENTMGR.UnRegisterFromAllEvents(AchievementObject);
+		AddAchievementTriggers(AchievementObject);
+	}
+	
+
+	if (NewGameState.GetNumGameStateObjects() > 0)
+	{
+		AddAchievementTriggers(AchievementObject);
+		History.AddGameStateToHistory(NewGameState);
+	}
+	else
+	{
+		History.CleanupPendingGameState(NewGameState);
+	}
+}
+
 static function AddAchievementTriggers(Object TriggerObj)
 {
 	local X2EventManager EventManager;

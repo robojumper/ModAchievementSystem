@@ -155,9 +155,13 @@ simulated function UpdateEventNotices()
 		for(i = 0; i < Notices.Length; ++i)
 		{
 			if( List.ItemCount <= i )
+			{
 				ListItem = Spawn(class'MAS_UIAchievementItem', List.itemContainer).InitInventoryListAchievement(Notices[i].Template);
+			}
 			else
+			{
 				ListItem = MAS_UIAchievementItem(List.GetItem(i));
+			}
 
 			ListItem.PopulateData();
 			ListItem.SetWarning(true);
