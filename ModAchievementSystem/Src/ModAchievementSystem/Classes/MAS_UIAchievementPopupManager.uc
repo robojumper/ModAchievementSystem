@@ -1,12 +1,6 @@
 class MAS_UIAchievementPopupManager extends UIScreen config(ModAchievementSystem);
 
-var localized string m_strTitle;
-var localized string m_strSubTitleTitle;
-var localized string m_strConfirmButtonLabel;
-var localized string m_strInventoryLabel;
-var localized string m_strSellLabel;
-var localized string m_strTotalLabel;
-var localized string m_strEmptyListTitle;
+
 
 var UIX2PanelHeader TitleHeader;
 
@@ -15,9 +9,6 @@ var MAS_UIAchievementCard ItemCard;
 var UIPanel ListContainer; // contains all controls bellow
 var UIList List;
 var UIPanel ListBG;
-
-var XComGameStateHistory History;
-var XComGameState_HeadquartersXCom XComHQ;
 
 var name DisplayTag;
 var name CameraTag;
@@ -53,8 +44,6 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	//`log("UIViewAchievements Init");
 	super.InitScreen(InitController, InitMovie, InitName);
 
-	History = `XCOMHISTORY;
-	XComHQ = class'UIUtilities_Strategy'.static.GetXComHQ(true);
 
 	BuildScreen();
 	//UpdateNavHelp();
@@ -65,7 +54,7 @@ simulated function BuildScreen()
 	`log("BuildScreen Called");
 	// BAsically, spawn everything and then hide it
 	TitleHeader = Spawn(class'UIX2PanelHeader', self);
-	TitleHeader.InitPanelHeader('TitleHeader', m_strTitle, m_strSubTitleTitle);
+	TitleHeader.InitPanelHeader('TitleHeader', "", "");
 	TitleHeader.SetHeaderWidth( 580 );
 	//if( m_strTitle == "" && m_strSubTitleTitle == "" )
 	TitleHeader.Hide();
@@ -92,14 +81,9 @@ simulated function BuildScreen()
 	/*TestItem = Spawn(class'MAS_UIAchievementItem', List.itemContainer).InitInventoryListAchievement(none);
 	TestItem.SetWarning(true);
 	TestItem.OnReceiveFocus();*/
-	SetCategory(m_strInventoryLabel);
-	SetBuiltLabel(m_strTotalLabel);
+	SetCategory("");
+	SetBuiltLabel("");
 
-	// send mouse scroll events to the list
-	//ListBG.ProcessMouseEvents(List.OnChildMouseEvent);
-
-	if( bIsIn3D )
-		class'UIUtilities'.static.DisplayUI3D(DisplayTag, CameraTag, OverrideInterpTime != -1 ? OverrideInterpTime : `HQINTERPTIME);
 }
 
 event Tick(float deltaTime)
@@ -183,12 +167,6 @@ simulated function bool AnyNotices()
 	return Notices.Length > 0;
 }
 
-simulated function UpdateNavHelp()
-{
-	`HQPRES.m_kAvengerHUD.NavHelp.ClearButtonHelp();
-	`HQPRES.m_kAvengerHUD.NavHelp.AddBackButton(CloseScreen);
-}
-
 simulated function SetCategory(string Category)
 {
 	MC.BeginFunctionOp("setItemCategory");
@@ -203,67 +181,19 @@ simulated function SetBuiltLabel(string Label)
 	MC.EndOp();
 }
 
-/*simulated function SetBuildItemLayout()
-{
-	MC.FunctionVoid( "setBuildItemLayout" );
-}*/
+
 
 simulated function SetChooseResearchLayout()
 {
 	MC.FunctionVoid( "setChooseResearchLayout" );
 }
 
-/*simulated function SetInventoryLayout()
-{
-	MC.FunctionVoid( "setInventoryLayout" );
-}
-
-simulated function SetBlackMarketLayout()
-{
-	MC.FunctionVoid( "setBlackMarketLayout" );
-}*/
-
-simulated function OnLoseFocus()
-{
-	super.OnLoseFocus();
-	if(bIsIn3D)
-		UIMovie_3D(Movie).HideDisplay(DisplayTag);
-}
-
-simulated function OnReceiveFocus()
-{
-	super.OnReceiveFocus();
-	UpdateNavHelp();
-	if(bIsIn3D)
-		class'UIUtilities'.static.DisplayUI3D(DisplayTag, CameraTag, `HQINTERPTIME);
-}
 
 simulated function PlaySFX(String Sound)
 {
 	`XSTRATEGYSOUNDMGR.PlaySoundEvent(Sound);
 }
 
-simulated function XComGameState_HeadquartersResistance RESHQ()
-{
-	return class'UIUtilities_Strategy'.static.GetResistanceHQ();
-}
-
-simulated function XComGameState_HeadquartersAlien ALIENHQ()
-{
-	return class'UIUtilities_Strategy'.static.GetAlienHQ();
-}
-
-simulated function XComGameState_BlackMarket BLACKMARKET()
-{
-	return class'UIUtilities_Strategy'.static.GetBlackMarket();
-}
-
-simulated function OnCancel()
-{
-	CloseScreen();
-	if(bIsIn3D)
-		UIMovie_3D(Movie).HideDisplay(DisplayTag);
-}
 
 defaultproperties
 {
@@ -274,5 +204,7 @@ defaultproperties
 	bSelectFirstAvailable = true;
 
 	OverrideInterpTime = -1;
-	MaxDisplayTime = 5.0; 
+	MaxDisplayTime = 4.0;
+
+	bShowDuringCinematic=true
 }

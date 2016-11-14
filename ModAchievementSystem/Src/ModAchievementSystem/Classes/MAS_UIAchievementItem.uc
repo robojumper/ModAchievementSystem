@@ -13,13 +13,11 @@ simulated function UIListItemString InitListItem(optional string InitText)
 
 simulated function PopulateData(optional bool bRealizeDisabled)
 {
-	local string shortDesc;
-	shortDesc = AchTemplate.strShortDesc @ AchTemplate.IsProgressionAchievement() ? "(" $ (AchTemplate.bNoCapForProgression ? AchTemplate.GetProgress() : Min(AchTemplate.GetProgress(), AchTemplate.iTotalProgressRequired)) $ "/" $ AchTemplate.iTotalProgressRequired $ ")" : "";
 	MC.BeginFunctionOp("populateData");
 	MC.QueueString(AchTemplate.GetSmallImagePath());
-	MC.QueueString(AchTemplate.strTitle);
+	MC.QueueString(AchTemplate.GetTitle());
 	MC.QueueString(AchTemplate.iPoints @ class'MAS_UIViewAchievements'.default.m_strPoints);
-	MC.QueueString(shortDesc);
+	MC.QueueString(AchTemplate.GetShortDesc());
 	MC.EndOp();
 
 	RealizeGoodState();

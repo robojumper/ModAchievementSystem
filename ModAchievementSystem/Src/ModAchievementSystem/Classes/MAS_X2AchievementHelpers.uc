@@ -29,8 +29,8 @@ static function GetAllAchievementTemplates(out array<MAS_X2AchievementTemplate> 
 	foreach TemplateManager.IterateTemplates(Template, none)
 	{
 		AchievementTemplate = MAS_X2AchievementTemplate(Template);
-
-		if(AchievementTemplate != none && (AchievementTemplate.IsUnlocked() || !AchievementTemplate.bHidden))
+		// add if unlocked, or not hidden, or we ignored whether it is hidden
+		if(AchievementTemplate != none && (AchievementTemplate.IsUnlocked() || (!AchievementTemplate.bHidden || bGetHidden)))
 		{
 			Achievements.AddItem(AchievementTemplate);
 		}

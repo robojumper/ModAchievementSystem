@@ -8,6 +8,11 @@ struct AchievementGroup
 	var int iGottenAchievements;
 	var string strCategoryName;
 	var array<MAS_X2AchievementTemplate> Achievements;
+
+	// keep track if we are collapsed, i.e. only show the header, not the whole list
+	var bool bCollapsed;
+
+	var UIInventory_HeaderListItem CachedHeaderListItem;
 };
 
 var localized string m_strPoints;
@@ -65,30 +70,52 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	ItemCard.Hide();
 }
 
+/*
+simulated function bool OnUnrealCommand(int cmd, int arg)
+{
+	local bool bHandled;
+
+	bHandled = true;
+
+	switch( cmd )
+	{
+	case class'UIUtilities_Input'.const.FXS_BUTTON_A:
+	case class'UIUtilities_Input'.const.FXS_KEY_ENTER:
+	case class'UIUtilities_Input'.const.FXS_KEY_SPACEBAR:
+		Click();
+		break;
+	default:
+		bHandled = false;
+		break;
+	}
+	return bHandled || super.OnUnrealCommand(cmd, arg);
+}
+*/
+
 simulated function PopulateData()
 {
 	local MAS_X2AchievementTemplate Template;
-	//local int i;
+	local UIInventory_HeaderListItem HeaderItem;
+	local int i;
 	local string GroupName;
 	local AchievementGroup GroupIterator;
 	List.ClearItems();
 	List.bSelectFirstAvailable = false;
 	
-	//
-	/*for(i = 0; i < m_arrAchievements.Length; i++)
-	{
-		Template = m_arrAchievements[i];
-		if (cachedCategory != Template.strCategory)
-		{
-			Spawn(class'UIInventory_HeaderListItem', List.ItemContainer).InitHeaderItem("", Template.strCategory);
-			cachedCategory = Template.strCategory;
-		}
-		Spawn(class'MAS_UIAchievementItem', List.itemContainer).InitInventoryListAchievement(Template);
-	}*/
-	foreach GroupsCache(GroupIterator)
+
+	foreach GroupsCache(GroupIterator, i)
 	{
 		GroupName = GroupIterator.strCategoryName $ ": " $ GroupIterator.iGottenAchievements $ "/" $ GroupIterator.iTotalAchievements $ " - " $ GroupIterator.iGottenPoints $ "/" $ GroupIterator.iTotalPoints @ m_strPoints;
-		Spawn(class'UIInventory_HeaderListItem', List.ItemContainer).InitHeaderItem("", GroupName);
+		HeaderItem = Spawn(class'UIInventory_HeaderListItem', List.ItemContainer);
+		
+		HeaderItem.InitHeaderItem("", GroupName);
+		HeaderItem.ProcessMouseEvents(OnHeaderMouseEvent);
+		GroupsCache[i].CachedHeaderListItem = HeaderItem;
+
+		if (GroupIterator.bCollapsed)
+		{
+			continue;
+		}
 		foreach GroupIterator.Achievements(Template)
 		{
 			Spawn(class'MAS_UIAchievementItem', List.itemContainer).InitInventoryListAchievement(Template);
@@ -96,6 +123,24 @@ simulated function PopulateData()
 	}
 
 }
+
+simulated function OnHeaderMouseEvent(UIPanel Control, int cmd)
+{
+	local int i;
+	if(cmd == class'UIUtilities_Input'.const.FXS_L_MOUSE_UP)
+	{
+		for (i = 0; i < GroupsCache.Length; i++)
+		{
+			if (Control == GroupsCache[i].CachedHeaderListItem)
+			{
+				GroupsCache[i].bCollapsed = !GroupsCache[i].bCollapsed;
+				PopulateData();
+				return;
+			}
+		}
+	}
+}
+
 
 
 function bool OnInfoClicked(int iOption)
@@ -113,7 +158,7 @@ simulated function GetItems()
 	local MAS_X2AchievementTemplate Ach;
 	local AchievementGroup group;
 	
-	m_arrAchievements = GetAchievements(false); // don't get hidden ones
+	m_arrAchievements = GetAchievements(true); // get all, filter after
 	SortItems();
 
 	cachedCategory = m_arrAchievements[0].strCategory;
@@ -133,7 +178,9 @@ simulated function GetItems()
 		group.iGottenAchievements += (Ach.IsUnlocked() ? 1 : 0);
 		group.iTotalPoints += Ach.iPoints;
 		group.iGottenPoints += (Ach.IsUnlocked() ? Ach.iPoints : 0);
-		group.Achievements.AddItem(Ach);
+		if (Ach.IsUnlocked() || !Ach.bHidden) {
+			group.Achievements.AddItem(Ach);
+		}
 		`log("Added Ach:" @ Ach.DataName);
 		
 	}
@@ -149,11 +196,12 @@ simulated function AchievementGroup GetEmptyGroup()
 simulated function SortItems()
 {
 	// should be a stable sorting algoritm
-	// so mods are ordered by category
+	// so achievements are ordered by category
 	// in there by whether they are unlocked
 	// and then by points
 	m_arrAchievements.Sort(SortByPoints);
 	m_arrAchievements.Sort(SortByEnabled);
+	m_arrAchievements.Sort(SortByHidden);
 	m_arrAchievements.Sort(SortByCategory);
 }
 
@@ -165,6 +213,11 @@ static function int SortByPoints(MAS_X2AchievementTemplate A, MAS_X2AchievementT
 static function int SortByEnabled(MAS_X2AchievementTemplate A, MAS_X2AchievementTemplate B)
 {
 	return (!A.IsUnlocked() && B.IsUnlocked()) ? -1 : 0;
+}
+
+static function int SortByHidden(MAS_X2AchievementTemplate A, MAS_X2AchievementTemplate B)
+{
+	return (!A.bHidden && B.bHidden) ? -1 : 0;
 }
 
 static function int SortByCategory(MAS_X2AchievementTemplate A, MAS_X2AchievementTemplate B)

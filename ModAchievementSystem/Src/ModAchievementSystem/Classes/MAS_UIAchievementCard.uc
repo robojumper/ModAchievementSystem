@@ -19,9 +19,9 @@ simulated function PopulateAchievementCard(optional MAS_X2AchievementTemplate Ac
 	}
 
 	//bWaitingForImageUpdate = false;
-	strTitle = class'UIUtilities_Text'.static.GetColoredText(class'UIUtilities_Text'.static.CapsCheckForGermanScharfesS(AchTemplate.strTitle), eUIState_Header, 24);
-	strLongDesc = class'UIUtilities_Text'.static.GetColoredText(AchTemplate.strLongDesc, eUIState_Normal, 18);
-	strShortDesc = class'UIUtilities_Text'.static.GetColoredText(AchTemplate.strShortDesc, eUIState_Normal, 24);
+	strTitle = class'UIUtilities_Text'.static.GetColoredText(class'UIUtilities_Text'.static.CapsCheckForGermanScharfesS(AchTemplate.GetTitle()), eUIState_Header, 24);
+	strLongDesc = class'UIUtilities_Text'.static.GetColoredText(AchTemplate.GetLongDesc(), eUIState_Normal, 18);
+	strShortDesc = class'UIUtilities_Text'.static.GetColoredText(AchTemplate.GetShortDesc(), eUIState_Normal, 24);
 	
 	PopulateData(strTitle, strLongDesc, strShortDesc, "");
 	SetAchievementImage(AchTemplate);
@@ -31,14 +31,19 @@ simulated function PopulateAchievementCard(optional MAS_X2AchievementTemplate Ac
 
 simulated function SetAchievementImage(optional MAS_X2AchievementTemplate AchTemplate)
 {
-	local string Image;
+	local array<string> Images;
+	local int i;
+
 	if (AchTemplate != none)
 	{
-		Image = AchTemplate.GetWideImagePath();
+		Images = AchTemplate.GetWideImagePathStack();
 	}
 
 	MC.BeginFunctionOp("SetImageStack");
-	MC.QueueString(Image);
+	for (i = 0; i < Images.Length; i++)
+	{
+		MC.QueueString(Images[i]);
+	}
 	MC.EndOp();
 
 }

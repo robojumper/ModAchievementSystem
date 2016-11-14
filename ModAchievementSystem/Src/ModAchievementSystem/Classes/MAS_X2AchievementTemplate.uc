@@ -80,12 +80,29 @@ function bool IsProgressionAchievement()
 	return iTotalProgressRequired > 0;
 }
 
+function string GetTitle()
+{
+	return strTitle;
+}
+
+function string GetShortDesc()
+{
+	return (strShortDesc @ IsProgressionAchievement() ? "(" $ (bNoCapForProgression ? GetProgress() : Min(GetProgress(), iTotalProgressRequired)) $ "/" $ iTotalProgressRequired $ ")" : "");
+}
+
+function string GetLongDesc()
+{
+	return strLongDesc;
+}
+
 function string GetSmallImagePath()
 {
 	return IsUnlocked() ? strImage_Enabled : strImage_Disabled;
 }
 
-function string GetWideImagePath()
+function array<string> GetWideImagePathStack()
 {
-	return IsUnlocked() ? strImage_WideEnabled : strImage_WideDisabled;
+	local array<string> Images;
+	Images.AddItem(IsUnlocked() ? strImage_WideEnabled : strImage_WideDisabled);
+	return Images;
 }
