@@ -24,6 +24,9 @@
     <Content Include="Config\XComModAchievementSystem.ini">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Localization\ModAchievementSystem.chn">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Localization\ModAchievementSystem.int">
       <SubType>Content</SubType>
     </Content>
@@ -54,7 +57,7 @@
     <Content Include="Src\ModAchievementSystem\Classes\MAS_UIAchievementPopupManager.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\ModAchievementSystem\Classes\MAS_UIInventory.uc">
+    <Content Include="Src\ModAchievementSystem\Classes\MAS_UISelectableHeaderListItem.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\ModAchievementSystem\Classes\MAS_UISL_PauseMenu.uc">

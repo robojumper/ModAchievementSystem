@@ -8,7 +8,6 @@ strCategory=Test Achievements
 [MAS_UIViewAchievements]
 m_strTitle=Achievements
 m_strInventoryLabel=All
-m_strBuy=More
 m_strPoints=Points
 
 [MAS_UIInventory]

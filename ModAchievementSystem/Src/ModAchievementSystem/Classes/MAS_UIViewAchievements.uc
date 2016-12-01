@@ -1,4 +1,5 @@
-class MAS_UIViewAchievements extends MAS_UIInventory;
+// TODO: This should be refactored to one class
+class MAS_UIViewAchievements extends UIScreen;
 
 struct AchievementGroup
 {
@@ -15,6 +16,9 @@ struct AchievementGroup
 	var UIInventory_HeaderListItem CachedHeaderListItem;
 };
 
+var localized string m_strTitle;
+var localized string m_strSubTitleTitle;
+var localized string m_strInventoryLabel;
 var localized string m_strPoints;
 
 var array<AchievementGroup> GroupsCache;
@@ -29,26 +33,39 @@ var bool		m_bShowButton;
 var bool		m_bInfoOnly;
 var EUIState	m_eMainColor;
 
-var public localized String m_strBuy;
+
+var UIX2PanelHeader TitleHeader;
+
+var MAS_UIAchievementCard ItemCard;
+
+var UIPanel ListContainer; // contains all controls below
+var UIList List;
+var UIPanel ListBG;
+
+var name InventoryListName;
 
 
 //-------------- EVENT HANDLING --------------------------------------------------------
-simulated function OnPurchaseClicked(UIList kList, int itemIndex)
+simulated function OnChildClicked(UIList kList, int itemIndex)
 {
+	local int i;
+	local UIPanel Control;
+
 	if (itemIndex != iSelectedItem)
 	{
 		iSelectedItem = itemIndex;
 	}
 
-	/*if (CanAffordItem(iSelectedItem))
+	Control = kList.GetItem(iSelectedItem);
+
+	for (i = 0; i < GroupsCache.Length; i++)
 	{
-		OnInfoClicked(iSelectedItem);
-			//Movie.Stack.Pop(self);
-		//UpdateData();
-	}*/
-	else
-	{
-		class'UIUtilities_Sound'.static.PlayNegativeSound();
+		if (Control == GroupsCache[i].CachedHeaderListItem)
+		{
+			GroupsCache[i].bCollapsed = !GroupsCache[i].bCollapsed;
+			PopulateData();
+			return;
+		}
 	}
 }
 
@@ -57,40 +74,112 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	`log("UIViewAchievements Init");
 	super.InitScreen(InitController, InitMovie, InitName);
 	
-	// Move and resize list to accommodate label
-	List.OnItemDoubleClicked = OnPurchaseClicked;
+	BuildScreen();
+
+	List.OnItemClicked = OnChildClicked;
 
 	GetItems();
-	SetBuiltLabel("Points");
+	SetBuiltLabel(m_strPoints);
 	
 	SetChooseResearchLayout();
 	PopulateData();
-	//MC.FunctionVoid("onPopulateDebugData");
 	
 	ItemCard.Hide();
 }
 
-/*
+simulated function BuildScreen()
+{
+	`log("BuildScreen Called");
+	TitleHeader = Spawn(class'UIX2PanelHeader', self);
+	TitleHeader.InitPanelHeader('TitleHeader', m_strTitle, m_strSubTitleTitle);
+	TitleHeader.SetHeaderWidth( 580 );
+	if( m_strTitle == "" && m_strSubTitleTitle == "" )
+		TitleHeader.Hide();
+
+	ListContainer = Spawn(class'UIPanel', self).InitPanel('InventoryContainer');
+
+	ItemCard = Spawn(class'MAS_UIAchievementCard', ListContainer).InitAchievementCard('ItemCard');
+	//ItemCard.Hide();
+	//`log("ItemCard Created");
+	//ItemCard.SetPosition(615, 0);
+
+	ListBG = Spawn(class'UIPanel', ListContainer);
+	ListBG.InitPanel('InventoryListBG'); 
+	ListBG.bShouldPlayGenericUIAudioEvents = false;
+	ListBG.Show();
+
+	List = Spawn(class'UIList', ListContainer);
+	List.InitList(InventoryListName);
+	List.bStickyHighlight = true;
+	List.OnSelectionChanged = SelectedItemChanged;
+	Navigator.SetSelected(ListContainer);
+	ListContainer.Navigator.SetSelected(List);
+	
+	SetCategory(m_strInventoryLabel);
+
+
+	// send mouse scroll events to the list
+	ListBG.ProcessMouseEvents(List.OnChildMouseEvent);
+
+}
+
+simulated function SelectedItemChanged(UIList ContainerList, int ItemIndex)
+{
+	local MAS_UIAchievementItem ListItem;
+	//`log("MAS -- Changed Selection");
+	ListItem = MAS_UIAchievementItem(ContainerList.GetItem(ItemIndex));
+	if(ListItem != none)
+	{
+		if(ListItem.AchTemplate != none)
+		{
+			PopulateAchievementCard(ListItem.AchTemplate);
+			//`log("MAS -- Populated card");
+		}
+		
+	}
+}
+
+simulated function PopulateAchievementCard(optional MAS_X2AchievementTemplate AchievementTemplate)
+{
+	if( ItemCard != none )
+	{
+		if( AchievementTemplate != None )
+		{
+			ItemCard.PopulateAchievementCard(AchievementTemplate);
+			//`log("MAS -- Populated card called");
+			ItemCard.Show();
+		}
+		else
+		{
+			ItemCard.Hide();
+		}
+	}
+}
+
 simulated function bool OnUnrealCommand(int cmd, int arg)
 {
 	local bool bHandled;
 
-	bHandled = true;
+	// Only pay attention to presses or repeats; ignoring other input types
+	// NOTE: Ensure repeats only occur with arrow keys
+	if ( !CheckInputIsReleaseOrDirectionRepeat(cmd, arg) )
+		return false;
 
+	bHandled = true;
 	switch( cmd )
 	{
-	case class'UIUtilities_Input'.const.FXS_BUTTON_A:
-	case class'UIUtilities_Input'.const.FXS_KEY_ENTER:
-	case class'UIUtilities_Input'.const.FXS_KEY_SPACEBAR:
-		Click();
-		break;
-	default:
-		bHandled = false;
-		break;
+		case class'UIUtilities_Input'.const.FXS_BUTTON_B:
+		case class'UIUtilities_Input'.const.FXS_KEY_ESCAPE:
+		case class'UIUtilities_Input'.const.FXS_R_MOUSE_DOWN:
+			OnCancel();
+			break;
+		default:
+			bHandled = false;
+			break;
 	}
+
 	return bHandled || super.OnUnrealCommand(cmd, arg);
 }
-*/
 
 simulated function PopulateData()
 {
@@ -100,16 +189,16 @@ simulated function PopulateData()
 	local string GroupName;
 	local AchievementGroup GroupIterator;
 	List.ClearItems();
-	List.bSelectFirstAvailable = false;
+	List.bSelectFirstAvailable = true;
 	
 
 	foreach GroupsCache(GroupIterator, i)
 	{
 		GroupName = GroupIterator.strCategoryName $ ": " $ GroupIterator.iGottenAchievements $ "/" $ GroupIterator.iTotalAchievements $ " - " $ GroupIterator.iGottenPoints $ "/" $ GroupIterator.iTotalPoints @ m_strPoints;
-		HeaderItem = Spawn(class'UIInventory_HeaderListItem', List.ItemContainer);
+		HeaderItem = Spawn(class'MAS_UISelectableHeaderListItem', List.ItemContainer);
 		
 		HeaderItem.InitHeaderItem("", GroupName);
-		HeaderItem.ProcessMouseEvents(OnHeaderMouseEvent);
+		//HeaderItem.ProcessMouseEvents(OnHeaderMouseEvent);
 		GroupsCache[i].CachedHeaderListItem = HeaderItem;
 
 		if (GroupIterator.bCollapsed)
@@ -124,6 +213,7 @@ simulated function PopulateData()
 
 }
 
+/*
 simulated function OnHeaderMouseEvent(UIPanel Control, int cmd)
 {
 	local int i;
@@ -140,7 +230,7 @@ simulated function OnHeaderMouseEvent(UIPanel Control, int cmd)
 		}
 	}
 }
-
+*/
 
 
 function bool OnInfoClicked(int iOption)
@@ -225,11 +315,6 @@ static function int SortByCategory(MAS_X2AchievementTemplate A, MAS_X2Achievemen
 	return A.strCategory > B.strCategory ? -1 : 0;
 }
 
-simulated function String GetButtonString(int ItemIndex)
-{
-	return m_strBuy;
-}
-
 simulated function bool ShouldShowGoodState(int index)
 {
 	return m_arrAchievements[index].IsUnlocked();
@@ -266,8 +351,54 @@ simulated function array<MAS_X2AchievementTemplate> GetAchievements(bool bGetHid
 	return AchTemplates;
 }
 
+
+simulated function SetCategory(string Category)
+{
+	MC.BeginFunctionOp("setItemCategory");
+	MC.QueueString(Category);
+	MC.EndOp();
+}
+
+simulated function SetBuiltLabel(string Label)
+{
+	MC.BeginFunctionOp("setBuiltLabel");
+	MC.QueueString(Label);
+	MC.EndOp();
+}
+
+simulated function SetChooseResearchLayout()
+{
+	MC.FunctionVoid( "setChooseResearchLayout" );
+}
+
+simulated function OnLoseFocus()
+{
+	super.OnLoseFocus();
+}
+
+simulated function OnReceiveFocus()
+{
+	super.OnReceiveFocus();
+}
+
+simulated function PlaySFX(String Sound)
+{
+	`XSTRATEGYSOUNDMGR.PlaySoundEvent(Sound);
+}
+
+simulated function OnCancel()
+{
+	CloseScreen();
+}
+
+
 defaultproperties
 {
+	Package = "/ package/gfxInventory/Inventory";
+
+	InventoryListName="inventoryListMC";
+	bAnimateOnInit = true;
+	
 	InputState = eInputState_Consume;
 	m_bShowButton = false
 	bHideOnLoseFocus = true;
