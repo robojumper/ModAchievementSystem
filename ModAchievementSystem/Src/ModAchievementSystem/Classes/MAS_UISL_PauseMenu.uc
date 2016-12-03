@@ -3,21 +3,27 @@ class MAS_UISL_PauseMenu extends UIScreenListener config(ModAchievementSystem);
 var config int iOffset_X;
 var config int iOffset_Y;
 
+
 event OnInit(UIScreen Screen)
 {
 	local UIPauseMenu Pause;
-	local vector2d wayoffpos;
-	local UIListItemString ListItem;
-	local int i, j;
+	//local int i, j;
+	local UIButton ListItem;
 
 	Pause = UIPauseMenu(Screen);
 	if (Pause != none && UIShellStrategy(Pause) == none)
 	{
-		ListItem = UIListItemString(Pause.List.CreateItem());
-		ListItem.InitListItem(class'MAS_UIViewAchievements'.default.m_strTitle);
-		ListItem.SetConfirmButtonStyle(eUIConfirmButtonStyle_Default, , , , OnClickAchievementsButton, );
-		wayoffpos.Y = 3;
-		ListItem.ConfirmButton.SetNormalizedPosition(wayoffpos);
+		ListItem = UIButton(Pause.List.CreateItem(class'UIButton'));
+		ListItem.ResizeToText = false;
+		ListItem.InitButton('DatButton', class'MAS_UIViewAchievements'.default.m_strTitle, OnClickAchievementsButton, eUIButtonStyle_NONE);
+		ListItem.SetResizeToText(false);
+		ListItem.SetHeight(32);
+		ListItem.SetWidth(Pause.List.width);
+		ListItem.SetFontSize(22);
+		ListItem.MC.SetBool("isHTML", true);
+		ListItem.MC.SetNum("scale", 0);
+		ListItem.MC.SetString("text", "<p align=\'LEFT\'>" $ "  " $ class'MAS_UIViewAchievements'.default.m_strTitle $ "</p>");
+		ListItem.MC.FunctionVoid("realize");
 
 /*		MoveItemToTop(Pause.List, ListItem);
 		j = Pause.List.GetItemCount() - 3;
@@ -27,6 +33,8 @@ event OnInit(UIScreen Screen)
 		}*/
 	}
 }
+
+
 
 simulated function MoveItemToTop(UIList List, UIPanel Item)
 {
@@ -44,6 +52,7 @@ simulated function MoveItemToTop(UIList List, UIPanel Item)
 		}
 	}
 }
+
 
 simulated function OnClickAchievementsButton(UIButton Button)
 {
