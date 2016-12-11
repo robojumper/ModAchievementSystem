@@ -1,6 +1,6 @@
-class MAS_X2AchievementTemplate extends X2StrategyElementTemplate config(ModAchievementSystem);
-
-//var name DataName;
+// This achievement is a "reference implementation" and the default achievement class
+// Mods need not go through this class, but can implement their own subclass of MAS_X2AchievementBase
+class MAS_X2AchievementTemplate extends MAS_X2AchievementBase config(ModAchievementSystem);
 
 var config string strImage_Disabled;
 var config string strImage_Enabled;
@@ -68,6 +68,14 @@ function SetProgress(int iProgress)
 	bProgressReadThisSession = true;
 }
 
+function bool IsProgressionAchievement()
+{
+	return iTotalProgressRequired > 0;
+}
+
+
+// MAS_X2BaseAchievement Interface
+
 function bool IsUnlocked()
 {
 	local MAS_PersistentAchievementStorage Storage;
@@ -75,14 +83,24 @@ function bool IsUnlocked()
 	return Storage.IsAchievementPersistentlyUnlocked(DataName) || bUnlockedThisSession;
 }
 
-function bool IsProgressionAchievement()
+function bool ShouldShow()
 {
-	return iTotalProgressRequired > 0;
+	return IsUnlocked() || !bHidden;
+}
+
+function int GetPoints()
+{
+	return iPoints;
 }
 
 function string GetTitle()
 {
 	return strTitle;
+}
+
+function string GetCategory()
+{
+	return strCategory;
 }
 
 function string GetShortDesc()
@@ -105,4 +123,20 @@ function array<string> GetWideImagePathStack()
 	local array<string> Images;
 	Images.AddItem(IsUnlocked() ? strImage_WideEnabled : strImage_WideDisabled);
 	return Images;
+}
+
+function Reset()
+{
+	local MAS_PersistentAchievementStorage Storage;
+
+	bUnlockedThisSession = false;
+	iProgressSessionCache = 0;
+	Storage = new class'MAS_PersistentAchievementStorage';
+	Storage.ClearAchievement(DataName);
+}
+
+
+function bool IsAuxiliaryAchievement()
+{
+	return false;
 }

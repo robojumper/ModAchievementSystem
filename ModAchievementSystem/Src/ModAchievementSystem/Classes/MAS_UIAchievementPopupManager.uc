@@ -28,7 +28,7 @@ var float OverrideInterpTime;
 
 struct UIAchNoticeItem
 {
-	var MAS_X2AchievementTemplate Template;
+	var MAS_X2AchievementBase Template;
 	var float DisplayTime;
 	structDefaultProperties
 	{
@@ -46,12 +46,60 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 
 
 	BuildScreen();
+	Hide();
 	//UpdateNavHelp();
+}
+
+// To show an achievement, trigger 'ShowAchievementMessage' with an LWTuple as the Data: Id = 'AchievementMessage'
+// Data[0].n = AchievementName
+static function EventListenerReturn ShowMessageHandler(Object EventData, Object EventSource, XComGameState GameState, Name EventID)
+{
+
+	local MAS_X2AchievementBase Achievement;
+
+	local LWTuple AchievementTuple;
+	local name AchievementName;
+	`log("Received Unlock Message!");
+	AchievementTuple = LWTuple(EventData);
+	if (AchievementTuple != none && AchievementTuple.Id == 'AchievementMessage')
+	{
+		AchievementName = AchievementTuple.Data[0].n;
+	}
+
+	Achievement = class'MAS_X2AchievementHelpers'.static.FindAchievementTemplate(AchievementName);
+
+	ShowUnlockMessage(Achievement);
+
+	return ELR_NoInterrupt;
+}
+
+static function ShowUnlockMessage(MAS_X2AchievementBase AchievementTemplate)
+{
+	local XComPresentationLayerBase Pres;
+
+	local MAS_UIAchievementPopupManager Popups;
+	local MAS_UIAchievementPopupManager ActorIterator;
+
+	Pres = `PRESBASE;
+		
+	foreach Pres.AllActors(class'MAS_UIAchievementPopupManager', ActorIterator)
+	{
+		Popups = ActorIterator;
+	}
+		
+	if(Popups == none)
+	{
+		`log("Created a new Achievement Popup Manager Screen");
+		Popups = Pres.Spawn(class'MAS_UIAchievementPopupManager', Pres);
+		Popups.InitScreen(XComPlayerController(Pres.Owner), Pres.Get2DMovie());
+		Pres.Get2DMovie().LoadScreen(Popups);
+	}
+		
+	Popups.Notify(AchievementTemplate);
 }
 
 simulated function BuildScreen()
 {
-	`log("BuildScreen Called");
 	// BAsically, spawn everything and then hide it
 	TitleHeader = Spawn(class'UIX2PanelHeader', self);
 	TitleHeader.InitPanelHeader('TitleHeader', "", "");
@@ -119,14 +167,19 @@ event Tick(float deltaTime)
 	}
 }
 
-simulated function Notify(MAS_X2AchievementTemplate Template)
+simulated function Notify(MAS_X2AchievementBase Template)
 {
 	local UIAchNoticeItem Notice;
-
-	Notice.Template = Template;
-	Notices.AddItem(Notice);
-	UpdateEventNotices();
-	WorldInfo.PlayAkEvent(AkEvent'SoundTacticalUI_Hacking.Unlock_Second_Item');
+	if (Template != none)
+	{
+		Notice.Template = Template;
+		Notices.AddItem(Notice);
+		UpdateEventNotices();
+		if (Template.IsUnlocked())
+		{
+			WorldInfo.PlayAkEvent(AkEvent'SoundTacticalUI_Hacking.Unlock_Second_Item');
+		}
+	}
 }
 
 simulated function UpdateEventNotices()
@@ -148,8 +201,11 @@ simulated function UpdateEventNotices()
 			}
 
 			ListItem.PopulateData();
-			ListItem.SetWarning(true);
-			ListItem.OnReceiveFocus();
+			if (Notices[i].Template.IsUnlocked())
+			{
+				ListItem.SetWarning(true);
+				ListItem.OnReceiveFocus();
+			}
 
 		}
 		Show();

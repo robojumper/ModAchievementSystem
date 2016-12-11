@@ -81,6 +81,7 @@ static function AddAchievementTriggers(Object TriggerObj)
 	// Set up triggers for achievements
 	EventManager = class'X2EventManager'.static.GetEventManager();
 	EventManager.RegisterForEvent(TriggerObj, 'UnlockAchievement', class'MAS_X2AchievementUnlockHandler'.static.OnAchievementUnlocked, ELD_Immediate, 50, , true);
+	EventManager.RegisterForEvent(TriggerObj, 'ShowAchievementMessage', class'MAS_UIAchievementPopupManager'.static.ShowMessageHandler, ELD_Immediate, 50, , true);
 }
 
 exec function ViewAchievements()

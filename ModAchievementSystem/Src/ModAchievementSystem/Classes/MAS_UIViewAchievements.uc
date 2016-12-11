@@ -1,4 +1,3 @@
-// TODO: This should be refactored to one class
 class MAS_UIViewAchievements extends UIScreen;
 
 struct AchievementGroup
@@ -8,7 +7,7 @@ struct AchievementGroup
 	var int iTotalAchievements;
 	var int iGottenAchievements;
 	var string strCategoryName;
-	var array<MAS_X2AchievementTemplate> Achievements;
+	var array<MAS_X2AchievementBase> Achievements;
 
 	// keep track if we are collapsed, i.e. only show the header, not the whole list
 	var bool bCollapsed;
@@ -23,7 +22,7 @@ var localized string m_strPoints;
 
 var array<AchievementGroup> GroupsCache;
 
-var array<MAS_X2AchievementTemplate> m_arrAchievements;
+var array<MAS_X2AchievementBase> m_arrAchievements;
 
 //var array<Commodity>		arrItems;
 var int						iSelectedItem;
@@ -44,6 +43,15 @@ var UIPanel ListBG;
 
 var name InventoryListName;
 
+// press B to back
+// press A to collapse expand selected
+// press X to expand all / collapse all
+// press Y to reset all
+var UINavigationHelp NavHelp;
+
+// true = all will be collapsed on next click
+// false = all will be collapsed on next click
+var bool bToggle;
 
 //-------------- EVENT HANDLING --------------------------------------------------------
 simulated function OnChildClicked(UIList kList, int itemIndex)
@@ -75,6 +83,8 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	super.InitScreen(InitController, InitMovie, InitName);
 	
 	BuildScreen();
+
+	NavHelp = Pc.Pres.m_kNavHelpScreen.NavHelp;
 
 	List.OnItemClicked = OnChildClicked;
 
@@ -139,7 +149,7 @@ simulated function SelectedItemChanged(UIList ContainerList, int ItemIndex)
 	}
 }
 
-simulated function PopulateAchievementCard(optional MAS_X2AchievementTemplate AchievementTemplate)
+simulated function PopulateAchievementCard(optional MAS_X2AchievementBase AchievementTemplate)
 {
 	if( ItemCard != none )
 	{
@@ -156,34 +166,10 @@ simulated function PopulateAchievementCard(optional MAS_X2AchievementTemplate Ac
 	}
 }
 
-simulated function bool OnUnrealCommand(int cmd, int arg)
-{
-	local bool bHandled;
-
-	// Only pay attention to presses or repeats; ignoring other input types
-	// NOTE: Ensure repeats only occur with arrow keys
-	if ( !CheckInputIsReleaseOrDirectionRepeat(cmd, arg) )
-		return false;
-
-	bHandled = true;
-	switch( cmd )
-	{
-		case class'UIUtilities_Input'.const.FXS_BUTTON_B:
-		case class'UIUtilities_Input'.const.FXS_KEY_ESCAPE:
-		case class'UIUtilities_Input'.const.FXS_R_MOUSE_DOWN:
-			OnCancel();
-			break;
-		default:
-			bHandled = false;
-			break;
-	}
-
-	return bHandled || super.OnUnrealCommand(cmd, arg);
-}
 
 simulated function PopulateData()
 {
-	local MAS_X2AchievementTemplate Template;
+	local MAS_X2AchievementBase Template;
 	local UIInventory_HeaderListItem HeaderItem;
 	local int i;
 	local string GroupName;
@@ -211,68 +197,39 @@ simulated function PopulateData()
 		}
 	}
 
+	UpdateNavHelp();
+
 }
-
-/*
-simulated function OnHeaderMouseEvent(UIPanel Control, int cmd)
-{
-	local int i;
-	if(cmd == class'UIUtilities_Input'.const.FXS_L_MOUSE_UP)
-	{
-		for (i = 0; i < GroupsCache.Length; i++)
-		{
-			if (Control == GroupsCache[i].CachedHeaderListItem)
-			{
-				GroupsCache[i].bCollapsed = !GroupsCache[i].bCollapsed;
-				PopulateData();
-				return;
-			}
-		}
-	}
-}
-*/
-
-
-function bool OnInfoClicked(int iOption)
-{
-	// TODO
-	return false;
-}
-
 
 simulated function GetItems()
 {
-
 	local string cachedCategory;
 	//local int number, totalAchievements, gottenAchievements, totalPoints, gottenPoints;
-	local MAS_X2AchievementTemplate Ach;
+	local MAS_X2AchievementBase Ach;
 	local AchievementGroup group;
 	
 	m_arrAchievements = GetAchievements(true); // get all, filter after
 	SortItems();
 
-	cachedCategory = m_arrAchievements[0].strCategory;
-	group.strCategoryName = m_arrAchievements[0].strCategory;
+	cachedCategory = m_arrAchievements[0].GetCategory();
+	group.strCategoryName = m_arrAchievements[0].GetCategory();
 	foreach m_arrAchievements(Ach)
 	{
-		if (cachedCategory != Ach.strCategory)
+		if (cachedCategory != Ach.GetCategory())
 		{
 			// finish group and create new one
-			`log("New Category:" @ Ach.strCategory);
 			GroupsCache.AddItem(group);
 			group = GetEmptyGroup();
-			group.strCategoryName = Ach.strCategory;
-			cachedCategory = Ach.strCategory;
+			group.strCategoryName = Ach.GetCategory();
+			cachedCategory = Ach.GetCategory();
 		}
 		group.iTotalAchievements += 1;
 		group.iGottenAchievements += (Ach.IsUnlocked() ? 1 : 0);
-		group.iTotalPoints += Ach.iPoints;
-		group.iGottenPoints += (Ach.IsUnlocked() ? Ach.iPoints : 0);
-		if (Ach.IsUnlocked() || !Ach.bHidden) {
+		group.iTotalPoints += Ach.GetPoints();
+		group.iGottenPoints += (Ach.IsUnlocked() ? Ach.GetPoints() : 0);
+		if (Ach.ShouldShow()) {
 			group.Achievements.AddItem(Ach);
 		}
-		`log("Added Ach:" @ Ach.DataName);
-		
 	}
 	GroupsCache.AddItem(group);
 }
@@ -295,24 +252,24 @@ simulated function SortItems()
 	m_arrAchievements.Sort(SortByCategory);
 }
 
-static function int SortByPoints(MAS_X2AchievementTemplate A, MAS_X2AchievementTemplate B)
+static function int SortByPoints(MAS_X2AchievementBase A, MAS_X2AchievementBase B)
 {
-	return A.iPoints > B.iPoints ? -1 : 0;
+	return A.GetPoints() > B.GetPoints() ? -1 : 0;
 }
 
-static function int SortByEnabled(MAS_X2AchievementTemplate A, MAS_X2AchievementTemplate B)
+static function int SortByEnabled(MAS_X2AchievementBase A, MAS_X2AchievementBase B)
 {
 	return (!A.IsUnlocked() && B.IsUnlocked()) ? -1 : 0;
 }
 
-static function int SortByHidden(MAS_X2AchievementTemplate A, MAS_X2AchievementTemplate B)
+static function int SortByHidden(MAS_X2AchievementBase A, MAS_X2AchievementBase B)
 {
-	return (!A.bHidden && B.bHidden) ? -1 : 0;
+	return (A.ShouldShow() && !B.ShouldShow()) ? -1 : 0;
 }
 
-static function int SortByCategory(MAS_X2AchievementTemplate A, MAS_X2AchievementTemplate B)
+static function int SortByCategory(MAS_X2AchievementBase A, MAS_X2AchievementBase B)
 {
-	return A.strCategory > B.strCategory ? -1 : 0;
+	return A.GetCategory() > B.GetCategory() ? -1 : 0;
 }
 
 simulated function bool ShouldShowGoodState(int index)
@@ -325,7 +282,7 @@ simulated function bool ShouldShowItemDisabledState(int index)
 	return !m_arrAchievements[index].IsUnlocked();
 }
 
-simulated function int GetItemIndex(MAS_X2AchievementTemplate Item)
+simulated function int GetItemIndex(MAS_X2AchievementBase Item)
 {
 	local int i;
 
@@ -342,13 +299,119 @@ simulated function int GetItemIndex(MAS_X2AchievementTemplate Item)
 
 
 //This is overwritten in the research archives. 
-simulated function array<MAS_X2AchievementTemplate> GetAchievements(bool bGetHidden)
+simulated function array<MAS_X2AchievementBase> GetAchievements(bool bGetHidden)
 {
 	//local MAS_X2AchievementTemplate Template;
-	local array<MAS_X2AchievementTemplate> AchTemplates;
+	local array<MAS_X2AchievementBase> AchTemplates;
 
 	class'MAS_X2AchievementHelpers'.static.GetAllAchievementTemplates(AchTemplates, bGetHidden);
 	return AchTemplates;
+}
+
+
+simulated function UpdateNavHelp()
+{
+
+	if(NavHelp == None)
+		NavHelp = Movie.Pres.GetNavHelp();
+	if(NavHelp == None)
+		NavHelp = Spawn(class'UINavigationHelp',self).InitNavHelp();
+
+	NavHelp.ClearButtonHelp();
+	
+	NavHelp.bIsVerticalHelp = `ISCONTROLLERACTIVE;
+
+	if (`ISCONTROLLERACTIVE)
+	{
+		// Add left nav help to show what buttons you can use
+		NavHelp.AddLeftHelp("Collapse/Expand", class'UIUtilities_Input'.static.GetGamepadIconPrefix() $ class'UIUtilities_Input'.const.ICON_A_X);
+		NavHelp.AddLeftHelp("Cancel", class'UIUtilities_Input'.static.GetGamepadIconPrefix() $ class'UIUtilities_Input'.const.ICON_B_CIRCLE);
+		NavHelp.AddLeftHelp("Collapse/Expand All", class'UIUtilities_Input'.static.GetGamepadIconPrefix() $ class'UIUtilities_Input'.const.ICON_X_SQUARE);
+		NavHelp.AddLeftHelp("Reset All", class'UIUtilities_Input'.static.GetGamepadIconPrefix() $ class'UIUtilities_Input'.const.ICON_Y_TRIANGLE);
+	}
+	else
+	{
+		NavHelp.AddCenterHelp("Collapse/Expand All", , ToggleExpandCollapseAll);
+		NavHelp.AddCenterHelp("Reset All", , OnResetAll);
+	}
+	NavHelp.Show();
+}
+
+simulated function bool OnUnrealCommand(int cmd, int arg)
+{
+	local bool bHandled;
+
+	// Only pay attention to presses or repeats; ignoring other input types
+	// NOTE: Ensure repeats only occur with arrow keys
+	if ( !CheckInputIsReleaseOrDirectionRepeat(cmd, arg) )
+		return false;
+
+	bHandled = true;
+	switch( cmd )
+	{
+		case class'UIUtilities_Input'.const.FXS_BUTTON_B:
+		case class'UIUtilities_Input'.const.FXS_KEY_ESCAPE:
+		case class'UIUtilities_Input'.const.FXS_R_MOUSE_DOWN:
+			CloseScreen();
+			break;
+		case class'UIUtilities_Input'.const.FXS_BUTTON_X:
+			ToggleExpandCollapseAll();
+			break;
+		case class'UIUtilities_Input'.const.FXS_BUTTON_Y:
+			OnResetAll();
+			break;
+		default:
+			bHandled = false;
+			break;
+	}
+
+	return bHandled || super.OnUnrealCommand(cmd, arg);
+}
+
+simulated function ToggleExpandCollapseAll()
+{
+	local int i;
+	bToggle = !bToggle;
+	for (i = 0; i < GroupsCache.Length; i++)
+	{
+		GroupsCache[i].bCollapsed = bToggle;
+	}
+	PopulateData();
+}
+
+function OnResetAll() 
+{
+	local TDialogueBoxData      kDialogData;
+
+
+	kDialogData.eType = eDialog_Warning;
+	kDialogData.strText = "This will irreversably reset all Achievement Data!"; 
+	kDialogData.fnCallback = ResetAllAchCallback;
+
+	kDialogData.strTitle = "Reset Achievements";
+	kDialogData.strAccept = class'UIUtilities_text'.default.m_strGenericConfirm; 
+	kDialogData.strCancel = class'UIUtilities_text'.default.m_strGenericCancel; 
+
+	Movie.Pres.UIRaiseDialog( kDialogData );
+}
+
+simulated public function ResetAllAchCallback(eUIAction eAction)
+{
+	local int i;
+	if (eAction == eUIAction_Accept)
+	{
+		Movie.Pres.PlayUISound(eSUISound_MenuSelect);
+		// DELETE ALL
+		for (i = 0; i < m_arrAchievements.Length; i++)
+		{
+			m_arrAchievements[i].Reset();
+		}
+		PopulateData();
+	}
+	else if( eAction == eUIAction_Cancel )
+	{
+		Movie.Pres.PlayUISound(eSUISound_MenuClose);
+	}
 }
 
 
@@ -371,25 +434,33 @@ simulated function SetChooseResearchLayout()
 	MC.FunctionVoid( "setChooseResearchLayout" );
 }
 
-simulated function OnLoseFocus()
-{
-	super.OnLoseFocus();
-}
-
 simulated function OnReceiveFocus()
 {
 	super.OnReceiveFocus();
+
+	UpdateNavHelp();
 }
+
+simulated function OnLoseFocus()
+{
+	super.OnLoseFocus();
+
+	NavHelp.ClearButtonHelp();
+}
+
+simulated function CloseScreen()
+{
+
+	NavHelp.ClearButtonHelp();
+	super.CloseScreen();	
+}
+
 
 simulated function PlaySFX(String Sound)
 {
 	`XSTRATEGYSOUNDMGR.PlaySoundEvent(Sound);
 }
 
-simulated function OnCancel()
-{
-	CloseScreen();
-}
 
 
 defaultproperties
@@ -398,7 +469,7 @@ defaultproperties
 
 	InventoryListName="inventoryListMC";
 	bAnimateOnInit = true;
-	
+	bConsumeMouseEvents=true;
 	InputState = eInputState_Consume;
 	m_bShowButton = false
 	bHideOnLoseFocus = true;

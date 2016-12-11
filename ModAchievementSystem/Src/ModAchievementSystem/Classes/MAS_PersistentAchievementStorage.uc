@@ -1,3 +1,5 @@
+// This is the storage for vanilla achievements.
+// Mod added ones can implement campaign ones if they want by implementing IsUnlocked
 class MAS_PersistentAchievementStorage extends Object config(MAS_NullConfig);
 
 var config array<name> UnlockedAchievements;
@@ -66,5 +68,26 @@ function SetStoredProgress(name Achievement, int iProgress)
 	Store.AchievementName = Achievement;
 	Store.iProgress = iProgress;
 	AchievementProgresses.AddItem(Store);
+	SaveConfig();
+}
+
+function ClearAchievement(name Achievement)
+{
+	local ProgressStore Store;
+	local int idx;
+
+	for(idx = AchievementProgresses.Length - 1; idx >= 0; idx--)
+	{
+		if(Store.AchievementName == Achievement)
+		{
+			AchievementProgresses.Remove(idx, 1);
+		}
+	}
+
+	idx = UnlockedAchievements.Find(Achievement);
+	if (idx != INDEX_NONE)
+	{
+		UnlockedAchievements.Remove(idx, 1);
+	}
 	SaveConfig();
 }

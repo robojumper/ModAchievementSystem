@@ -1,3 +1,6 @@
+// This class is responsible for managing the vanilla achievement interactions
+// Mod added ones can not use it
+// For popups there is an event
 class MAS_X2AchievementUnlockHandler extends Object;
 
 static function EventListenerReturn OnAchievementUnlocked(Object EventData, Object EventSource, XComGameState GameState, Name EventID)
@@ -24,7 +27,7 @@ static function EventListenerReturn OnAchievementUnlocked(Object EventData, Obje
 		Command = AchievementTuple.Data[1].n;
 	}
 
-	Achievement = class'MAS_X2AchievementHelpers'.static.FindAchievementTemplate(AchievementName);
+	Achievement = MAS_X2AchievementTemplate(class'MAS_X2AchievementHelpers'.static.FindAchievementTemplate(AchievementName));
 	if (Achievement != none)
 	{
 		if (Command == 'UnlockAchievement')
@@ -55,38 +58,18 @@ static function CheckProgress(MAS_X2AchievementTemplate Achievement)
 
 static function TryUnlockAchievement(MAS_X2AchievementTemplate Achievement)
 {
-	local XComPresentationLayerBase Pres;
-
-	local MAS_UIAchievementPopupManager Popups;
-	local MAS_UIAchievementPopupManager ActorIterator;
-
+	local LWTuple AchTuple;
+	local LWTValue Val;
 	if (Achievement.IsUnlocked() == false)
 	{
-		
-		//Achievement.bUnlockedThisSession = true; // Hack because storage doesn't work until the next startup (or small delay)
 		Achievement.Unlock();
-		`log("MAS -- An Achievement has been unlocked. It is" @ Achievement.DataName);
-		Pres = `PRESBASE;
-		
-		foreach Pres.AllActors(class'MAS_UIAchievementPopupManager', ActorIterator)
-		{
-			Popups = ActorIterator;
-		}
+		//class'MAS_UIAchievementPopupManager'.static.ShowUnlockMessage(Achievement);
+		AchTuple = new class'LWTuple';
+		AchTuple.Id = 'AchievementMessage';
 
-		if(Popups == none)
-		{
-			`log("Created a new Achievement Popup Manager Screen");
-			Popups = Pres.Spawn(class'MAS_UIAchievementPopupManager', Pres);
-			Popups.InitScreen(XComPlayerController(Pres.Owner), Pres.Get2DMovie());
-			Pres.Get2DMovie().LoadScreen(Popups);
-		}
-		
-		Popups.Notify(Achievement);
-			
-		//Pres.UITutorialBox(Achievement.strTitle, Achievement.strShortDesc $ "<br/> <br/>" $ Achievement.strLongDesc, Achievement.GetWideImagePath());
-			
-		return;	
+		Val.kind = LWTVName;
+		Val.n = Achievement.DataName;
+		AchTuple.Data.AddItem(Val);
+		`XEVENTMGR.TriggerEvent('ShowAchievementMessage', AchTuple);
 	}
-	`log("MAS -- Achievement" @ Achievement.DataName @ "is already unlocked, but congrats nonetheless. :P");
-	return;
 }

@@ -162,3 +162,48 @@ AchTuple.Data.AddItem(Value);
 ```
 
 In this code, we add 1 point of progression to the achievement ```MyProgressionAchievement```. Remember - if ```bNoAutoUnlock = true```, you need to unlock it manually.
+
+
+## Your completely own achievement
+
+The above code describes MAS' built-in achievement mechanics. You can always create your own achievements, with custom conditions, custom display, everything.
+
+To do that, you need to add two packages: `LWTuple` and `AchievementInterface`
+
+Compiler Setup is similar to LWTuple for AchievementInterface - the former is linked above, the latter file is here:
+
+[MAS_X2AchievementBase.uc](https://github.com/robojumper/ModAchievementSystem/blob/master/ModAchievementSystem/Src/AchievementInterface/Classes/MAS_X2AchievementBase.uc)
+
+Extend this class, and add templates created from your subclass to the `X2StrategyElementTemplateManager` in order to have them picked up.
+
+Let's take a look at the methods to implement:
+
+* IsUnlocked() - whether this achievement will be highlighted green in the list, and shown at the top.
+* ShouldShow() - whether this achievement will get a position on the list. If not, it counts towards points and completion, but doesn't show
+* GetPoints() - points to calculate completion rates. Also shown in the list and in popups
+* GetTitle() - card+item title
+* GetShortDesc() - item description
+* GetLongDesc() - card description
+* GetCategory() - shown in list item headers. Used to calculate completions
+* GetSmallImagePath() - item image. 64x64
+* GetWideImagePathStack() - stack of card images. should be created at 560x315, and then scaled to 512x256 for importing. Max. 9
+* Reset() - reset this achievement to 0
+* IsAuxiliaryAchievement() - this achievement doesn't count, it can only be used as a popup message.
+
+
+Showing popup messages happens via an LWTuple:
+
+```
+local LWTuple SendTuple;
+local LWTValue Val;
+
+SendTuple = new class'LWTuple';
+SendTuple.Id = 'AchievementMessage';
+
+Val.kind = LWTVName;
+Val.n = 'MyAchievementTemplate';
+SendTuple.Data.AddItem(Val);
+
+`XEVENTMGR.TriggerEvent('ShowAchievementMessage', SendTuple);
+
+```

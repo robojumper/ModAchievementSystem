@@ -1,6 +1,6 @@
 class MAS_UIAchievementItem extends UIListItemString;
 
-var MAS_X2AchievementTemplate AchTemplate;
+var MAS_X2AchievementBase AchTemplate;
 
 simulated function UIListItemString InitListItem(optional string InitText)
 {
@@ -16,7 +16,7 @@ simulated function PopulateData(optional bool bRealizeDisabled)
 	MC.BeginFunctionOp("populateData");
 	MC.QueueString(AchTemplate.GetSmallImagePath());
 	MC.QueueString(AchTemplate.GetTitle());
-	MC.QueueString(AchTemplate.iPoints @ class'MAS_UIViewAchievements'.default.m_strPoints);
+	MC.QueueString(AchTemplate.GetPoints() @ class'MAS_UIViewAchievements'.default.m_strPoints);
 	MC.QueueString(AchTemplate.GetShortDesc());
 	MC.EndOp();
 
@@ -31,7 +31,7 @@ simulated function OnInit()
 }
 
 
-simulated function MAS_UIAchievementItem InitInventoryListAchievement(MAS_X2AchievementTemplate Template)
+simulated function MAS_UIAchievementItem InitInventoryListAchievement(MAS_X2AchievementBase Template)
 {
 	AchTemplate = Template;
 	InitListItem();
