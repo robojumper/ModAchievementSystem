@@ -90,8 +90,19 @@ function bool ShouldShow()
 
 function int GetPoints()
 {
+	return IsUnlocked() ? iPoints : 0;
+}
+
+function int GetPointsMaximum()
+{
 	return iPoints;
 }
+
+function string GetPointsString()
+{
+	return GetPointsMaximum() @ class'MAS_UIViewAchievements'.default.m_strPoints;
+}
+
 
 function string GetTitle()
 {

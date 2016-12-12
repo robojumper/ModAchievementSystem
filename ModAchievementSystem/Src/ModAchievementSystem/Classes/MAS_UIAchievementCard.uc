@@ -23,7 +23,7 @@ simulated function PopulateAchievementCard(optional MAS_X2AchievementBase AchTem
 		return;
 	}
 
-	strTitle = class'UIUtilities_Text'.static.GetColoredText(class'UIUtilities_Text'.static.CapsCheckForGermanScharfesS(AchTemplate.GetTitle() $ " - " $ AchTemplate.GetPoints() @ class'MAS_UIViewAchievements'.default.m_strPoints), eUIState_Header, 24);
+	strTitle = class'UIUtilities_Text'.static.GetColoredText(class'UIUtilities_Text'.static.CapsCheckForGermanScharfesS(AchTemplate.GetTitle() $ " - " $ AchTemplate.GetPointsString()), eUIState_Header, 24);
 	/*strLongDesc = class'UIUtilities_Text'.static.GetColoredText(AchTemplate.GetLongDesc(), eUIState_Normal, 18);
 	strShortDesc = class'UIUtilities_Text'.static.GetColoredText(AchTemplate.GetShortDesc(), eUIState_Normal, 24);*/
 	//strTitle = class'UIUtilities_Text'.static.CapsCheckForGermanScharfesS(AchTemplate.GetTitle());

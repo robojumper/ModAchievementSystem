@@ -225,8 +225,8 @@ simulated function GetItems()
 		}
 		group.iTotalAchievements += 1;
 		group.iGottenAchievements += (Ach.IsUnlocked() ? 1 : 0);
-		group.iTotalPoints += Ach.GetPoints();
-		group.iGottenPoints += (Ach.IsUnlocked() ? Ach.GetPoints() : 0);
+		group.iTotalPoints += Ach.GetPointsMaximum();
+		group.iGottenPoints += (Ach.GetPoints());
 		if (Ach.ShouldShow()) {
 			group.Achievements.AddItem(Ach);
 		}

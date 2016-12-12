@@ -17,11 +17,26 @@ function bool ShouldShow()
 	return true;
 }
 
-// How many points?
+// How many points? Normally grant points for completed achievements only
 function int GetPoints()
 {
 	`REDSCREEN(default.class.name @ "does not implement" @ GetFuncName());
 	return -1;
+}
+
+// How many points maximum (for completion display)
+function int GetPointsMaximum()
+{
+	`REDSCREEN(default.class.name @ "does not implement" @ GetFuncName());
+	return -1;
+}
+
+// in contrast to the above function, this is what's being displayed
+// use this to display a difference in maximum achieveable points
+function string GetPointsString()
+{
+	`REDSCREEN(default.class.name @ "does not implement" @ GetFuncName());
+	return "-1";
 }
 
 // Title shown in List Item + Card

@@ -16,7 +16,7 @@ simulated function PopulateData(optional bool bRealizeDisabled)
 	MC.BeginFunctionOp("populateData");
 	MC.QueueString(AchTemplate.GetSmallImagePath());
 	MC.QueueString(AchTemplate.GetTitle());
-	MC.QueueString(AchTemplate.GetPoints() @ class'MAS_UIViewAchievements'.default.m_strPoints);
+	MC.QueueString(AchTemplate.GetPointsString());
 	MC.QueueString(AchTemplate.GetShortDesc());
 	MC.EndOp();
 
