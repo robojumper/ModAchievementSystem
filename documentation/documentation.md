@@ -32,6 +32,7 @@ Notice how the Template Name corresponds to the header in line 3.
 A good way to avoid conflicts is to prefix this with something like your Mod's initials + Achievement.
 
 The four images are fallback images you can use in case you lack artistic talent. I might update these images in the future.
+Since the 15.01.2017 patch, you don't have to add these four lines. These images are used by default.
 
 The points are used for completion calculation and give your users a good impression on what Achievements are easy, difficult and so on.
 
